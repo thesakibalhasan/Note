@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "My Notes - Powerful Note Taking App",
+  title: "My Notes",
   description: "A customizable and powerful note-taking application",
     generator: 'v0.dev'
 }
