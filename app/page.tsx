@@ -305,7 +305,7 @@ export default function NotesApp() {
         setIsAuthenticated(true)
         setPasswordError("")
       } else {
-        setPasswordError(`Wrong password! Current time password is: ${correctPassword}`)
+        setPasswordError(`Wrong password!`)
         setPassword("")
       }
     },
@@ -623,10 +623,8 @@ export default function NotesApp() {
               <BookOpen className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Shared Notes Access</h1>
-            <p className="text-muted-foreground">Enter the current time password to continue</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Format: [hour][minute][am/pm] (e.g., 909pm for 9:09 PM)
-            </p>
+            <p className="text-muted-foreground">Enter the current password to continue</p>
+
             <div className="flex items-center justify-center gap-1 mt-3 text-xs text-muted-foreground">
               <Users className="h-3 w-3" />
               <span>All notes are shared with everyone</span>
@@ -641,7 +639,7 @@ export default function NotesApp() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter current time (e.g., 909pm)"
+                placeholder="Enter current Password"
                 className="text-center"
                 autoFocus
               />
@@ -656,9 +654,7 @@ export default function NotesApp() {
             </Button>
           </form>
 
-          <div className="mt-4 text-center">
-            <p className="text-xs text-muted-foreground">Current time: {new Date().toLocaleTimeString()}</p>
-          </div>
+
         </div>
       </div>
     )
