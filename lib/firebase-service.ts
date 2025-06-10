@@ -25,6 +25,8 @@ export interface FirebaseNote {
   isArchived: boolean
   isTrashed: boolean
   images: string[]
+  password?: string // নতুন password field
+  isPasswordProtected: boolean // password আছে কিনা check করার জন্য
 }
 
 const NOTES_COLLECTION = "notes"
@@ -97,6 +99,44 @@ export const uploadImage = async (file: File): Promise<string> => {
     return downloadURL
   } catch (error) {
     console.error("Error uploading image:", error)
+    throw error
+  }
+}
+
+// Verify note password
+export const verifyNotePassword = (note: FirebaseNote, inputPassword: string): boolean => {
+  if (!note.isPasswordProtected || !note.password) {
+    return true // No password required
+  }
+  return note.password === inputPassword
+}
+
+// Set note password
+export const setNotePassword = async (id: string, password: string) => {
+  try {
+    const noteRef = doc(db, NOTES_COLLECTION, id)
+    await updateDoc(noteRef, {
+      password: password,
+      isPasswordProtected: true,
+      updatedAt: serverTimestamp(),
+    })
+  } catch (error) {
+    console.error("Error setting password:", error)
+    throw error
+  }
+}
+
+// Remove note password
+export const removeNotePassword = async (id: string) => {
+  try {
+    const noteRef = doc(db, NOTES_COLLECTION, id)
+    await updateDoc(noteRef, {
+      password: "",
+      isPasswordProtected: false,
+      updatedAt: serverTimestamp(),
+    })
+  } catch (error) {
+    console.error("Error removing password:", error)
     throw error
   }
 }

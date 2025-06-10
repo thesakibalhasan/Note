@@ -41,6 +41,8 @@ interface Note {
   category: string
   tags: string
   images: string[]
+  password?: string
+  isPasswordProtected?: boolean
 }
 
 interface OptimizedNoteEditorProps {
@@ -333,6 +335,8 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
       category: categoryRef.current,
       tags: tagsRef.current,
       images: imagesRef.current,
+      password: note.password || "",
+      isPasswordProtected: note.isPasswordProtected || false,
     }
 
     onSave(currentNote)
@@ -459,7 +463,7 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
     <TooltipProvider>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="border-b p-4 flex-shrink-0 bg-background">
+        <div className="border-b p-4 flex-shrink-0 bg-background sticky top-0 z-40">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">{note.id ? "Edit Note" : "Create New Note"}</h2>
             <div className="flex items-center gap-2">
@@ -586,6 +590,9 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                     onChange={handleContentChange}
                     placeholder="Write your note here... Use **bold**, *italic*, ## headings, - lists"
                     className="w-full h-full resize-none border-0 outline-none bg-transparent text-foreground placeholder:text-muted-foreground font-mono text-sm leading-relaxed"
+                    style={{
+                      // Maximum performance settings
+                    }}
                     autoCorrect="off"
                     autoCapitalize="off"
                     autoComplete="off"
@@ -626,7 +633,7 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
 
             <TabsContent value="preview" className="flex-1 overflow-hidden m-0">
               <ScrollArea className="h-full">
-                <div className="p-6 h-full overflow-y-auto">
+                <div className="p-6">
                   <div className="max-w-none">
                     <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                       {currentTitle || "Untitled"}
