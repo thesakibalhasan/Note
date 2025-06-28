@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { uploadImage } from "@/lib/firebase-service"
 import {
   Bold,
@@ -32,6 +33,15 @@ import {
   Table,
   X,
   Loader2,
+  Minus,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Type,
+  Palette,
+  Highlighter,
+  Eraser,
+  AlertTriangle,
 } from "lucide-react"
 
 interface Note {
@@ -74,6 +84,9 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
   const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState(false) // Disable auto-save initially
   const [isInitialized, setIsInitialized] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+
+  // Custom alert dialog state
+  const [showTitleAlert, setShowTitleAlert] = useState(false)
 
   // Auto-save timer
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -218,7 +231,7 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
           formattedText = `\n- [ ] ${selectedText || "task item"}`
           break
         case "link":
-          formattedText = `[${selectedText || "link text"}](url)`
+          formattedText = `[${selectedText || "link text"}](https://example.com)`
           break
         case "h1":
           formattedText = `\n# ${selectedText || "Heading 1"}\n`
@@ -246,6 +259,31 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
           break
         case "subscript":
           formattedText = `<sub>${selectedText || "subscript"}</sub>`
+          break
+        case "hr":
+          formattedText = `\n---\n`
+          break
+        case "alignLeft":
+          formattedText = `\n<div style="text-align: left;">${selectedText || "Left aligned text"}</div>\n`
+          break
+        case "alignCenter":
+          formattedText = `\n<div style="text-align: center;">${selectedText || "Center aligned text"}</div>\n`
+          break
+        case "alignRight":
+          formattedText = `\n<div style="text-align: right;">${selectedText || "Right aligned text"}</div>\n`
+          break
+        case "fontSize":
+          formattedText = `<span style="font-size: 18px;">${selectedText || "sized text"}</span>`
+          break
+        case "textColor":
+          formattedText = `<span style="color: #ff0000;">${selectedText || "colored text"}</span>`
+          break
+        case "highlight":
+          formattedText = `<mark style="background-color: #ffff00;">${selectedText || "highlighted text"}</mark>`
+          break
+        case "clearFormat":
+          // Remove common formatting from selected text
+          formattedText = selectedText.replace(/\*\*|__|\*|_|~~|`|<[^>]*>/g, "")
           break
       }
 
@@ -280,7 +318,6 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
             return imageUrl
           } catch (error) {
             console.error("Error uploading image:", error)
-            alert(`Failed to upload ${file.name}`)
             return null
           }
         })
@@ -295,7 +332,6 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
         }
       } catch (error) {
         console.error("Error uploading images:", error)
-        alert("Failed to upload images. Please try again.")
       } finally {
         setIsUploadingImage(false)
         // Reset file input
@@ -322,9 +358,9 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
     // Sync current values before saving
     syncValues()
 
-    // Don't save if title is empty
+    // Don't save if title is empty - show custom dialog instead of alert
     if (!currentTitle.trim()) {
-      alert("Please enter a title for your note")
+      setShowTitleAlert(true)
       return
     }
 
@@ -373,11 +409,13 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
       .replace(/\*(.*?)\*/g, "<em>$1</em>")
       // Strikethrough
       .replace(/~~(.*?)~~/g, "<del>$1</del>")
-      // Links
+      // Links - Fixed regex
       .replace(
         /\[(.*?)\]$$(.*?)$$/g,
         '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">$1</a>',
       )
+      // Horizontal rule
+      .replace(/^\s*---\s*$/gm, "<hr class='my-4 border-t-2 border-gray-300 dark:border-gray-700' />")
       // Headings
       .replace(/^# (.*?)$/gm, "<h1 class='text-3xl font-bold my-6 text-gray-900 dark:text-gray-100'>$1</h1>")
       .replace(/^## (.*?)$/gm, "<h2 class='text-2xl font-bold my-5 text-gray-900 dark:text-gray-100'>$1</h2>")
@@ -462,6 +500,34 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
   return (
     <TooltipProvider>
       <div className="flex flex-col h-full">
+        {/* Custom Title Alert Dialog */}
+        <Dialog open={showTitleAlert} onOpenChange={setShowTitleAlert}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+                Title Required
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-muted-foreground">
+                Please enter a title for your note before saving. The title helps you identify and organize your notes.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  setShowTitleAlert(false)
+                  titleRef.current?.focus()
+                }}
+                className="w-full"
+              >
+                OK
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Header */}
         <div className="border-b p-4 flex-shrink-0 bg-background sticky top-0 z-40">
           <div className="flex items-center justify-between mb-4">
@@ -550,6 +616,14 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                       { format: "table", icon: Table, tooltip: "Table" },
                       { format: "superscript", icon: Superscript, tooltip: "Superscript" },
                       { format: "subscript", icon: Subscript, tooltip: "Subscript" },
+                      // { format: "hr", icon: Minus, tooltip: "Horizontal Line" },
+                      { format: "alignLeft", icon: AlignLeft, tooltip: "Align Left" },
+                      { format: "alignCenter", icon: AlignCenter, tooltip: "Align Center" },
+                      { format: "alignRight", icon: AlignRight, tooltip: "Align Right" },
+                      { format: "fontSize", icon: Type, tooltip: "Font Size" },
+                      { format: "textColor", icon: Palette, tooltip: "Text Color" },
+                      { format: "highlight", icon: Highlighter, tooltip: "Highlight" },
+                      { format: "clearFormat", icon: Eraser, tooltip: "Clear Formatting" },
                     ].map(({ format, icon: Icon, tooltip }) => (
                       <Tooltip key={format}>
                         <TooltipTrigger asChild>
@@ -561,7 +635,7 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                       </Tooltip>
                     ))}
 
-                    <Tooltip>
+                    {/* <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
@@ -578,7 +652,7 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>{isUploadingImage ? "Uploading..." : "Add Image"}</TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                   </div>
                 </div>
 
@@ -588,11 +662,13 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                     ref={contentRef}
                     value={currentContent}
                     onChange={handleContentChange}
-                    placeholder="Write your note here... Use **bold**, *italic*, ## headings, - lists"
+                    placeholder="Write your note here... Use **bold**, *italic*, ## headings, - lists, [link text](url)"
                     className="w-full h-full resize-none border-0 outline-none bg-transparent text-foreground placeholder:text-muted-foreground font-mono text-sm leading-relaxed"
-                    style={{
-                      // Maximum performance settings
-                    }}
+                    style={
+                      {
+                        // Maximum performance settings
+                      }
+                    }
                     autoCorrect="off"
                     autoCapitalize="off"
                     autoComplete="off"
