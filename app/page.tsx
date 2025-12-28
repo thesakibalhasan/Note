@@ -1356,11 +1356,19 @@ export default function NotesApp() {
     }
   }, [])
 
+function Loader() {
+  return (
+    <div className="w-40 h-40 mx-auto mb-4">
+      <Lottie animationData={colouredLoader} loop={true} />
+    </div>
+  );
+}
+
 if (loading) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
-        <Lottie animationData={colouredLoader} loop={true} className="h-15 w-15 mx-auto mb-2" />
+        <Loader /> 
         <p className="text-muted-foreground">Loading notes...</p>
       </div>
     </div>
