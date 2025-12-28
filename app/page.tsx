@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -120,6 +120,7 @@ import {
   Bell,
   CloudRain,
   Snowflake,
+  
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { CategoryManager } from "@/lib/category-manager"
@@ -554,7 +555,7 @@ const MemoizedNoteCard = React.memo(
         <Dialog open={showMobileMenu} onOpenChange={setShowMobileMenu}>
           <DialogContent className="sm:max-w-md">
             <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold">{note.title}</h3>
+              <DialogTitle className="text-lg font-semibold">{note.title}</DialogTitle>
               <p className="text-sm text-muted-foreground">Choose an action</p>
             </div>
 
@@ -1413,6 +1414,7 @@ if (loading) {
                 className="text-center"
                 autoFocus
               />
+              {/* <p className="text-center"><i>Only I know the Password</i></p> */}
             </div>
 
             {passwordError && (
@@ -1755,7 +1757,7 @@ if (loading) {
               <div className="flex flex-col h-full">
                 <div className="border-b p-4 flex-shrink-0 bg-background">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold">{viewingNote?.title}</h2>
+                    <DialogTitle className="text-xl font-semibold">{viewingNote?.title}</DialogTitle>
                     <div className="flex items-center gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -2057,13 +2059,13 @@ if (loading) {
                 <Lock className="h-8 w-8 text-amber-600 dark:text-amber-400" />
               )}
             </div>
-            <h2 className="text-xl font-semibold mb-2">
+            <DialogTitle className="text-xl font-semibold mb-2">
               {passwordDialog.action === "setPassword"
                 ? "Set Password"
                 : passwordDialog.action === "removePassword"
                   ? "Remove Password"
                   : "Password Required"}
-            </h2>
+            </DialogTitle>
             <p className="text-muted-foreground mb-4">
               {passwordDialog.action === "setPassword"
                 ? "Enter a password to protect this note"

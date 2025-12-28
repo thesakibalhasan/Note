@@ -141,6 +141,8 @@ import {
   Hospital,
   Church,
   Castle,
+  Accessibility,
+  Pickaxe
 } from "lucide-react"
 
 // Available icons organized by categories
@@ -167,6 +169,7 @@ const ICON_CATEGORIES = {
     { name: "Laptop", icon: Laptop },
     { name: "Keyboard", icon: Keyboard },
     { name: "Mouse", icon: Mouse },
+    { name: "Accessibility", icon: Accessibility },
   ],
   Education: [
     { name: "BookOpen", icon: BookOpen },
@@ -309,6 +312,7 @@ const ICON_CATEGORIES = {
     { name: "Hospital", icon: Hospital },
     { name: "Church", icon: Church },
     { name: "Castle", icon: Castle },
+    { name: "Minecraft", icon: Pickaxe },
   ],
 }
 
