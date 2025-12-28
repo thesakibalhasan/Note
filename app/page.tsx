@@ -1368,9 +1368,218 @@ function Loader() {
 if (loading) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
+      <style>{`
+        .loader {
+          --background: linear-gradient(135deg, #23C4F8, #275EFE);
+          --shadow: rgba(39, 94, 254, 0.28);
+          --text: #6C7486;
+          --page: rgba(255, 255, 255, 0.36);
+          --page-fold: rgba(255, 255, 255, 0.52);
+          --duration: 3s;
+          width: 200px;
+          height: 140px;
+          position: relative;
+        }
+
+        .loader:before, .loader:after {
+          --r: -6deg;
+          content: "";
+          position: absolute;
+          bottom: 8px;
+          width: 120px;
+          top: 80%;
+          box-shadow: 0 16px 12px var(--shadow);
+          transform: rotate(var(--r));
+        }
+
+        .loader:before {
+          left: 4px;
+        }
+
+        .loader:after {
+          --r: 6deg;
+          right: 4px;
+        }
+
+        .loader div {
+          width: 100%;
+          height: 100%;
+          border-radius: 13px;
+          position: relative;
+          z-index: 1;
+          perspective: 600px;
+          box-shadow: 0 4px 6px var(--shadow);
+          background-image: var(--background);
+        }
+
+        .loader div ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          position: relative;
+        }
+
+        .loader div ul li {
+          --r: 180deg;
+          --o: 0;
+          --c: var(--page);
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          transform-origin: 100% 50%;
+          color: var(--c);
+          opacity: var(--o);
+          transform: rotateY(var(--r));
+          animation: var(--duration) ease infinite;
+        }
+
+        .loader div ul li:nth-child(2) {
+          --c: var(--page-fold);
+          animation-name: page-2;
+        }
+
+        .loader div ul li:nth-child(3) {
+          --c: var(--page-fold);
+          animation-name: page-3;
+        }
+
+        .loader div ul li:nth-child(4) {
+          --c: var(--page-fold);
+          animation-name: page-4;
+        }
+
+        .loader div ul li:nth-child(5) {
+          --c: var(--page-fold);
+          animation-name: page-5;
+        }
+
+        .loader div ul li svg {
+          width: 90px;
+          height: 120px;
+          display: block;
+        }
+
+        .loader div ul li:first-child {
+          --r: 0deg;
+          --o: 1;
+        }
+
+        .loader div ul li:last-child {
+          --o: 1;
+        }
+
+        .loader span {
+          display: block;
+          left: 0;
+          right: 0;
+          top: 100%;
+          margin-top: 20px;
+          text-align: center;
+          color: var(--text);
+        }
+
+        @keyframes page-2 {
+          0% {
+            transform: rotateY(180deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+          }
+          35%, 100% {
+            opacity: 0;
+          }
+          50%, 100% {
+            transform: rotateY(0deg);
+          }
+        }
+
+        @keyframes page-3 {
+          15% {
+            transform: rotateY(180deg);
+            opacity: 0;
+          }
+          35% {
+            opacity: 1;
+          }
+          50%, 100% {
+            opacity: 0;
+          }
+          65%, 100% {
+            transform: rotateY(0deg);
+          }
+        }
+
+        @keyframes page-4 {
+          30% {
+            transform: rotateY(180deg);
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+          65%, 100% {
+            opacity: 0;
+          }
+          80%, 100% {
+            transform: rotateY(0deg);
+          }
+        }
+
+        @keyframes page-5 {
+          45% {
+            transform: rotateY(180deg);
+            opacity: 0;
+          }
+          65% {
+            opacity: 1;
+          }
+          80%, 100% {
+            opacity: 0;
+          }
+          95%, 100% {
+            transform: rotateY(0deg);
+          }
+        }
+      `}</style>
       <div className="text-center">
-        <Loader /> 
-        <p className="text-muted-foreground">Loading notes...</p>
+        <div className="loader">
+          <div>
+            <ul>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+              <li>
+                <svg fill="currentColor" viewBox="0 0 90 120">
+                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                </svg>
+              </li>
+            </ul>
+          </div>
+          <span>Loading</span>
+        </div>
       </div>
     </div>
   );
@@ -1421,9 +1630,184 @@ if (loading) {
               <div className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded">{passwordError}</div>
             )}
 
-            <Button type="submit" className="w-full">
-              Access Shared Notes
-            </Button>
+            <style>{`
+              @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap");
+
+              .btn-space {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 13rem;
+                overflow: hidden;
+                height: 3rem;
+                background-size: 300% 300%;
+                backdrop-filter: blur(1rem);
+                border-radius: 5rem;
+                transition: 0.5s;
+                animation: gradient_301 5s ease infinite;
+                border: double 4px transparent;
+                background-image: linear-gradient(#161a25, #161a25),
+                  linear-gradient(
+                    137.48deg,
+                    #f5434f 10%,
+                    #631e29 45%,
+                    #000000 67%,
+                    #161a25 87%
+                  );
+                background-origin: border-box;
+                background-clip: content-box, border-box;
+                font-family: "Orbitron", sans-serif;
+                cursor: pointer;
+              }
+
+              #container-stars {
+                position: absolute;
+                z-index: -1;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                transition: 0.5s;
+                backdrop-filter: blur(1rem);
+                border-radius: 5rem;
+              }
+
+              .btn-space strong {
+                z-index: 2;
+                font-family: "Orbitron", sans-serif;
+                font-size: 12px;
+                letter-spacing: 5px;
+                color: #ffffff;
+                text-shadow: 0 0 4px white;
+              }
+
+              #glow {
+                position: absolute;
+                display: flex;
+                width: 12rem;
+              }
+
+              .circle {
+                position: absolute;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                filter: blur(2rem);
+              }
+
+              .circle:nth-of-type(1) {
+                background: rgba(245, 67, 79, 0.636);
+                animation: orbit 8s linear infinite;
+              }
+
+              .circle:nth-of-type(2) {
+                background: rgba(99, 30, 41, 0.704);
+                animation: orbit 10s linear infinite;
+              }
+
+              .btn-space:hover #container-stars {
+                z-index: 1;
+                background-color: #161a25;
+              }
+
+              .btn-space:hover {
+                transform: scale(1.1);
+              }
+
+              .btn-space:active {
+                border: double 4px #631e29;
+                background-origin: border-box;
+                background-clip: content-box, border-box;
+                animation: none;
+              }
+
+              .btn-space:active .circle {
+                background: #631e29;
+              }
+
+              @keyframes orbit {
+                from {
+                  transform: rotate(0deg) translateX(100px) rotate(0deg);
+                }
+                to {
+                  transform: rotate(360deg) translateX(100px) rotate(-360deg);
+                }
+              }
+
+              #stars {
+                position: relative;
+                background: transparent;
+                width: 200rem;
+                height: 200rem;
+              }
+
+              #stars::after {
+                content: "";
+                position: absolute;
+                top: -10rem;
+                left: -100rem;
+                width: 100%;
+                height: 100%;
+                animation: animStarRotate 90s linear infinite;
+                background-image: radial-gradient(#ffffff 1px, transparent 1%);
+                background-size: 50px 50px;
+              }
+
+              #stars::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -50%;
+                width: 170%;
+                height: 500%;
+                animation: animStar 60s linear infinite;
+                background-image: radial-gradient(#ffffff 1px, transparent 1%);
+                background-size: 50px 50px;
+                opacity: 0.5;
+              }
+
+              @keyframes animStar {
+                from {
+                  transform: translateY(0);
+                }
+                to {
+                  transform: translateY(-135rem);
+                }
+              }
+
+              @keyframes animStarRotate {
+                from {
+                  transform: rotate(360deg);
+                }
+                to {
+                  transform: rotate(0);
+                }
+              }
+
+              @keyframes gradient_301 {
+                0% {
+                  background-position: 0% 50%;
+                }
+                50% {
+                  background-position: 100% 50%;
+                }
+                100% {
+                  background-position: 0% 50%;
+                }
+              }
+            `}</style>
+
+            <div className="flex justify-center">
+              <button type="submit" className="btn-space">
+              <strong>Access Shared Notes</strong>
+              <div id="container-stars">
+                <div id="stars" />
+              </div>
+              <div id="glow">
+                <div className="circle" />
+                <div className="circle" />
+              </div>
+              </button>
+            </div>
                           <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
                 Made by{" "}
                 <a 
