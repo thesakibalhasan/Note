@@ -9,6 +9,8 @@ import {
   orderBy,
   serverTimestamp,
   type Timestamp,
+  setDoc,
+  getDoc,
 } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { db, storage } from "./firebase"
@@ -52,7 +54,6 @@ export const subscribeToNotes = (callback: (notes: FirebaseNote[]) => void) => {
 export const getLockedNoteContent = async (id: string): Promise<string> => {
   try {
     const noteRef = doc(db, NOTES_COLLECTION, id)
-    const { getDoc } = await import("firebase/firestore")
     const docSnap = await getDoc(noteRef)
 
     if (docSnap.exists()) {
@@ -156,5 +157,48 @@ export const removeNotePassword = async (id: string) => {
   } catch (error) {
     console.error("Error removing password:", error)
     throw error
+  }
+}
+
+// Save categories to Firebase
+export const saveCategoriesToFirebase = async (categories: any[]) => {
+  try {
+    const categoriesRef = doc(db, "system", "categories")
+    await setDoc(
+      categoriesRef,
+      {
+        categories: categories.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          color: cat.color,
+          icon: cat.icon,
+          position: cat.position,
+          isDefault: cat.isDefault,
+          createdAt: cat.createdAt instanceof Date ? cat.createdAt.toISOString() : cat.createdAt,
+        })),
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
+  } catch (error) {
+    console.error("Error saving categories to Firebase:", error)
+    throw error
+  }
+}
+
+// Load categories from Firebase
+export const loadCategoriesFromFirebase = async () => {
+  try {
+    const categoriesRef = doc(db, "system", "categories")
+    const docSnap = await getDoc(categoriesRef)
+
+    if (docSnap.exists()) {
+      const data = docSnap.data()
+      return data.categories || []
+    }
+    return []
+  } catch (error) {
+    console.error("Error loading categories from Firebase:", error)
+    return []
   }
 }

@@ -12,10 +12,10 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import Lottie from "lottie-react";
-import colouredLoader from "./note loading.json"; // JSON ফাইল path ঠিক করে দাও
+import colouredLoader from "./note loading.json"; 
 
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   subscribeToNotes,
   addNote,
@@ -120,16 +120,11 @@ import {
   Bell,
   CloudRain,
   Snowflake,
-  Icon,
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { CategoryManager } from "@/lib/category-manager"
 import { CategoryManagerDialog } from "@/components/category-manager-dialog"
 import { EnhancedNoteEditor } from "@/components/enhanced-note-editor"
-import { link } from "fs"
-import Head from "next/head"
-
-<link rel="icon" href="public/favicon.ico" sizes="any" />
 
 interface Note {
   id: string
@@ -306,7 +301,7 @@ const MemoizedNoteCard = React.memo(
 
     const handleTouchEnd = (e: React.TouchEvent) => {
       const touchDuration = Date.now() - touchStartTime
-      if (touchDuration > 500) {
+      if (touchDuration > 3000) {
         e.preventDefault()
         setShowMobileMenu(true)
       }
@@ -1341,8 +1336,9 @@ export default function NotesApp() {
 
   // Loading state
   useEffect(() => {
-    const loadCategories = () => {
+    const loadCategories = async () => {
       const categoryManager = CategoryManager.getInstance()
+      await categoryManager.loadCategoriesFromFirebase()
       const allCategories = categoryManager.getAllCategories()
       setCategories(allCategories.map((cat) => cat.name))
     }
@@ -1350,7 +1346,9 @@ export default function NotesApp() {
     loadCategories()
 
     // Listen for category updates
-    const handleCategoryUpdate = () => loadCategories()
+    const handleCategoryUpdate = () => {
+      loadCategories()
+    }
     window.addEventListener("categoriesUpdated", handleCategoryUpdate)
 
     return () => {
@@ -1358,20 +1356,11 @@ export default function NotesApp() {
     }
   }, [])
 
-
-function Loader() {
-  return (
-    <div className="w-40 h-40 mx-auto mb-4">
-      <Lottie animationData={colouredLoader} loop={true} />
-    </div>
-  );
-}
-
 if (loading) {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
-        <Loader /> 
+        <Lottie animationData={colouredLoader} loop={true} className="h-15 w-15 mx-auto mb-2" />
         <p className="text-muted-foreground">Loading notes...</p>
       </div>
     </div>
@@ -1384,13 +1373,11 @@ if (loading) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
         
-
-
       <div className="absolute top-4 right-4 w-32 h-32 opacity-80">
         <Lottie animationData={require("./password.json")} loop={true} />
         
       </div>
-      
+
         <div className="bg-background border rounded-lg p-8 w-full max-w-md mx-4 shadow-2xl">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -1408,7 +1395,7 @@ if (loading) {
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="password">Password </Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -1418,7 +1405,6 @@ if (loading) {
                 className="text-center"
                 autoFocus
               />
-              
             </div>
 
             {passwordError && (
@@ -1428,7 +1414,7 @@ if (loading) {
             <Button type="submit" className="w-full">
               Access Shared Notes
             </Button>
-              <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
+                          <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
                 Made by{" "}
                 <a 
                   href="http://iamthesakibalhasan.netlify.app/" 
@@ -1436,10 +1422,10 @@ if (loading) {
                   rel="noopener noreferrer"
                   className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  Sakib Al Hasan
+                  <u>Sakib Al Hasan</u>
                 </a>
               </div>
-            
+
           </form>
         </div>
       </div>

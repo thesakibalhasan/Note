@@ -115,6 +115,66 @@ export class CategoryManager {
   private saveCustomCategories(): void {
     const customCategories = this.categories.filter((cat) => !cat.isDefault)
     localStorage.setItem("custom-categories", JSON.stringify(customCategories))
+    this.syncCategoriesToFirebase(customCategories)
+  }
+
+  private syncCategoriesToFirebase(customCategories: CustomCategory[]): void {
+    if (typeof window === "undefined") return // Skip on server-side
+
+    const syncCategories = async () => {
+      try {
+        const { db } = await import("./firebase")
+        const { doc, setDoc } = await import("firebase/firestore")
+
+        // Store categories in a single document for easier management
+        const categoriesRef = doc(db, "system", "categories")
+        await setDoc(
+          categoriesRef,
+          {
+            categories: customCategories.map((cat) => ({
+              id: cat.id,
+              name: cat.name,
+              color: cat.color,
+              icon: cat.icon,
+              position: cat.position,
+              isDefault: cat.isDefault,
+              createdAt: cat.createdAt.toISOString(),
+            })),
+            updatedAt: new Date().toISOString(),
+          },
+          { merge: true },
+        )
+      } catch (error) {
+        console.error("Error syncing categories to Firebase:", error)
+      }
+    }
+
+    syncCategories()
+  }
+
+  async loadCategoriesFromFirebase(): Promise<void> {
+    try {
+      const { db } = await import("./firebase")
+      const { doc, getDoc } = await import("firebase/firestore")
+
+      const categoriesRef = doc(db, "system", "categories")
+      const docSnap = await getDoc(categoriesRef)
+
+      if (docSnap.exists()) {
+        const data = docSnap.data()
+        const firebaseCategories = data.categories || []
+
+        // Update localStorage with Firebase data
+        localStorage.setItem(
+          "custom-categories",
+          JSON.stringify(firebaseCategories.filter((cat: any) => !cat.isDefault)),
+        )
+
+        this.loadCategories()
+      }
+    } catch (error) {
+      console.error("Error loading categories from Firebase:", error)
+    }
   }
 
   getAllCategories(): CustomCategory[] {
