@@ -1,21 +1,32 @@
-"use client"
+"use client";
 
-import React from "react"
-import { useState, useEffect, useCallback, useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import React from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Lottie from "lottie-react";
-import colouredLoader from "./note loading.json"; 
+import colouredLoader from "./note loading.json";
 
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   subscribeToNotes,
   addNote,
@@ -24,7 +35,7 @@ import {
   setNotePassword,
   removeNotePassword,
   getLockedNoteContent,
-} from "@/lib/firebase-service"
+} from "@/lib/firebase-service";
 import {
   Search,
   Plus,
@@ -43,7 +54,6 @@ import {
   RotateCcw,
   Filter,
   ImageIcon,
-  Loader2,
   Users,
   Globe,
   Lock,
@@ -120,44 +130,51 @@ import {
   Bell,
   CloudRain,
   Snowflake,
-  
-} from "lucide-react"
-import { useTheme } from "next-themes"
-import { CategoryManager } from "@/lib/category-manager"
-import { CategoryManagerDialog } from "@/components/category-manager-dialog"
-import { EnhancedNoteEditor } from "@/components/enhanced-note-editor"
+  MoreVertical,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { CategoryManager } from "@/lib/category-manager";
+import { CategoryManagerDialog } from "@/components/category-manager-dialog";
+import { EnhancedNoteEditor } from "@/components/enhanced-note-editor";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"; // Import Dropdown components
 
 interface Note {
-  id: string
-  title: string
-  content: string
-  category: string
-  tags: string[]
-  createdAt: string
-  updatedAt: string
-  isPinned: boolean
-  isArchived: boolean
-  isTrashed: boolean
-  images: string[]
-  password?: string
-  isPasswordProtected: boolean
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  isPinned: boolean;
+  isArchived: boolean;
+  isTrashed: boolean;
+  images: string[];
+  password?: string;
+  isPasswordProtected: boolean;
 }
 
 // Define the FirebaseNote interface (assuming it's defined elsewhere or should be defined here)
 interface FirebaseNote {
-  id?: string
-  title: string
-  content: string
-  category: string
-  tags: string[]
-  createdAt: Date
-  updatedAt: Date
-  isPinned: boolean
-  isArchived: boolean
-  isTrashed: boolean
-  images: string[]
-  password?: string
-  isPasswordProtected: boolean
+  id?: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  isPinned: boolean;
+  isArchived: boolean;
+  isTrashed: boolean;
+  images: string[];
+  password?: string;
+  isPasswordProtected: boolean;
 }
 
 // Icon mapping function - moved outside component for better performance
@@ -238,11 +255,12 @@ const getIconComponent = (iconName: string, className = "h-3.5 w-3.5") => {
     Bell,
     CloudRain,
     Snowflake,
-  }
+    MoreVertical, // Added for the new menu icon
+  };
 
-  const IconComponent = iconMap[iconName] || Circle
-  return <IconComponent className={className} />
-}
+  const IconComponent = iconMap[iconName] || Circle;
+  return <IconComponent className={className} />;
+};
 
 // Convert Firebase note to local note format
 const convertFirebaseNote = (firebaseNote: FirebaseNote): Note => ({
@@ -251,15 +269,21 @@ const convertFirebaseNote = (firebaseNote: FirebaseNote): Note => ({
   content: firebaseNote.content,
   category: firebaseNote.category,
   tags: firebaseNote.tags,
-  createdAt: firebaseNote.createdAt instanceof Date ? firebaseNote.createdAt.toISOString() : new Date().toISOString(),
-  updatedAt: firebaseNote.updatedAt instanceof Date ? firebaseNote.updatedAt.toISOString() : new Date().toISOString(),
+  createdAt:
+    firebaseNote.createdAt instanceof Date
+      ? firebaseNote.createdAt.toISOString()
+      : new Date().toISOString(),
+  updatedAt:
+    firebaseNote.updatedAt instanceof Date
+      ? firebaseNote.updatedAt.toISOString()
+      : new Date().toISOString(),
   isPinned: firebaseNote.isPinned,
   isArchived: firebaseNote.isArchived,
   isTrashed: firebaseNote.isTrashed,
   images: firebaseNote.images,
   password: firebaseNote.password || "",
   isPasswordProtected: firebaseNote.isPasswordProtected || false,
-})
+});
 
 // Memoized Note Card Component for better performance
 const MemoizedNoteCard = React.memo(
@@ -276,50 +300,23 @@ const MemoizedNoteCard = React.memo(
     onSetPassword,
     onRemovePassword,
   }: {
-    note: Note
-    onView: (note: Note) => void
-    onEdit: (note: Note) => void
-    onPin: (id: string) => void
-    onArchive: (id: string) => void
-    onTrash: (id: string) => void
-    onRestore: (id: string) => void
-    onDelete: (id: string) => void
-    onDownload: (note: Note, format: string) => void
-    onSetPassword: (note: Note) => void
-    onRemovePassword: (note: Note) => void
+    note: Note;
+    onView: (note: Note) => void;
+    onEdit: (note: Note) => void;
+    onPin: (id: string) => void;
+    onArchive: (id: string) => void;
+    onTrash: (id: string) => void;
+    onRestore: (id: string) => void;
+    onDelete: (id: string) => void;
+    onDownload: (note: Note, format: string) => void;
+    onSetPassword: (note: Note) => void;
+    onRemovePassword: (note: Note) => void;
   }) => {
-    const [showMobileMenu, setShowMobileMenu] = useState(false)
-    const [touchStartTime, setTouchStartTime] = useState(0)
-    const [touchStartPos, setTouchStartPos] = useState({ x: 0, y: 0 })
-
-    const handleTouchStart = (e: React.TouchEvent) => {
-      setTouchStartTime(Date.now())
-      setTouchStartPos({
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      })
-    }
-
-    const handleTouchEnd = (e: React.TouchEvent) => {
-      const touchDuration = Date.now() - touchStartTime
-      if (touchDuration > 3000) {
-        e.preventDefault()
-        setShowMobileMenu(true)
-      }
-    }
-
-    const handleTouchMove = (e: React.TouchEvent) => {
-      const moveThreshold = 10
-      const deltaX = Math.abs(e.touches[0].clientX - touchStartPos.x)
-      const deltaY = Math.abs(e.touches[0].clientY - touchStartPos.y)
-      if (deltaX > moveThreshold || deltaY > moveThreshold) {
-        setTouchStartTime(0)
-      }
-    }
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
 
     const displayContent = note.isPasswordProtected
-      ? "•••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• ••••••"
-      : note.content
+      ? "•••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• •••••• ••••••"
+      : note.content;
 
     return (
       <>
@@ -328,16 +325,97 @@ const MemoizedNoteCard = React.memo(
             <Card
               className={`group cursor-pointer hover:shadow-lg transition-all duration-200 relative ${
                 note.isPinned ? "border-primary" : ""
-              } ${note.isTrashed ? "opacity-75" : ""} ${note.isPasswordProtected ? "border-amber-200 dark:border-amber-800" : ""}`}
+              } ${note.isTrashed ? "opacity-75" : ""} ${
+                note.isPasswordProtected
+                  ? "border-amber-200 dark:border-amber-800"
+                  : ""
+              }`}
               onClick={() => onView(note)}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              onTouchMove={handleTouchMove}
             >
-              {note.isPinned && <Star className="absolute top-2 right-2 h-4 w-4 text-primary fill-primary" />}
+              {note.isPinned && (
+                <Star className="absolute top-2 right-2 h-4 w-4 text-primary fill-primary" />
+              )}
               {note.isPasswordProtected && (
                 <Lock className="absolute top-2 right-8 h-4 w-4 text-amber-600 dark:text-amber-400" />
               )}
+
+              <div className="absolute top-2 right-2 sm:right-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    asChild
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 md:hidden"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {!note.isTrashed && (
+                      <>
+                        <DropdownMenuItem onClick={() => onEdit(note)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onPin(note.id)}>
+                          <Star className="h-4 w-4 mr-2" />
+                          {note.isPinned ? "Unpin" : "Pin"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            if (note.isPasswordProtected) {
+                              onRemovePassword(note);
+                            } else {
+                              onSetPassword(note);
+                            }
+                          }}
+                        >
+                          <Shield className="h-4 w-4 mr-2" />
+                          {note.isPasswordProtected
+                            ? "Remove Lock"
+                            : "Add Lock"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDownload(note, "txt")}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onArchive(note.id)}>
+                          <Archive className="h-4 w-4 mr-2" />
+                          {note.isArchived ? "Unarchive" : "Archive"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => onTrash(note.id)}
+                          className="text-destructive"
+                        >
+                          <Trash className="h-4 w-4 mr-2" />
+                          Trash
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    {note.isTrashed && (
+                      <>
+                        <DropdownMenuItem onClick={() => onRestore(note.id)}>
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Restore
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDelete(note.id)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Forever
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
@@ -363,8 +441,8 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onDownload(note, "txt")
+                                e.stopPropagation();
+                                onDownload(note, "txt");
                               }}
                             >
                               <Download className="h-3 w-3" />
@@ -380,11 +458,11 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
+                                e.stopPropagation();
                                 if (note.isPasswordProtected) {
-                                  onRemovePassword(note)
+                                  onRemovePassword(note);
                                 } else {
-                                  onSetPassword(note)
+                                  onSetPassword(note);
                                 }
                               }}
                             >
@@ -392,7 +470,9 @@ const MemoizedNoteCard = React.memo(
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {note.isPasswordProtected ? "Remove Password" : "Set Password"}
+                            {note.isPasswordProtected
+                              ? "Remove Password"
+                              : "Set Password"}
                           </TooltipContent>
                         </Tooltip>
 
@@ -403,14 +483,22 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onPin(note.id)
+                                e.stopPropagation();
+                                onPin(note.id);
                               }}
                             >
-                              <Star className={`h-3 w-3 ${note.isPinned ? "fill-primary text-primary" : ""}`} />
+                              <Star
+                                className={`h-3 w-3 ${
+                                  note.isPinned
+                                    ? "fill-primary text-primary"
+                                    : ""
+                                }`}
+                              />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>{note.isPinned ? "Unpin note" : "Pin note"}</TooltipContent>
+                          <TooltipContent>
+                            {note.isPinned ? "Unpin note" : "Pin note"}
+                          </TooltipContent>
                         </Tooltip>
 
                         <Tooltip>
@@ -420,8 +508,8 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onEdit(note)
+                                e.stopPropagation();
+                                onEdit(note);
                               }}
                             >
                               <Edit className="h-3 w-3" />
@@ -437,14 +525,18 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onArchive(note.id)
+                                e.stopPropagation();
+                                onArchive(note.id);
                               }}
                             >
                               <Archive className="h-3 w-3" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>{note.isArchived ? "Unarchive note" : "Archive note"}</TooltipContent>
+                          <TooltipContent>
+                            {note.isArchived
+                              ? "Unarchive note"
+                              : "Archive note"}
+                          </TooltipContent>
                         </Tooltip>
 
                         <Tooltip>
@@ -454,8 +546,8 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onTrash(note.id)
+                                e.stopPropagation();
+                                onTrash(note.id);
                               }}
                             >
                               <Trash className="h-3 w-3" />
@@ -475,8 +567,8 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6 text-green-600 hover:text-green-700"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onRestore(note.id)
+                                e.stopPropagation();
+                                onRestore(note.id);
                               }}
                             >
                               <RotateCcw className="h-3 w-3" />
@@ -492,8 +584,8 @@ const MemoizedNoteCard = React.memo(
                               size="icon"
                               className="h-6 w-6 text-destructive"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                onDelete(note.id)
+                                e.stopPropagation();
+                                onDelete(note.id);
                               }}
                             >
                               <Trash2 className="h-3 w-3" />
@@ -517,7 +609,9 @@ const MemoizedNoteCard = React.memo(
 
               <CardContent>
                 <p
-                  className={`text-sm text-muted-foreground line-clamp-3 ${note.isPasswordProtected ? "blur-sm select-none" : ""}`}
+                  className={`text-sm text-muted-foreground line-clamp-3 ${
+                    note.isPasswordProtected ? "blur-sm select-none" : ""
+                  }`}
                 >
                   {displayContent.slice(0, 150)}
                   {displayContent.length > 150 && "..."}
@@ -526,7 +620,9 @@ const MemoizedNoteCard = React.memo(
                 {note.images && note.images.length > 0 && (
                   <div className="flex gap-1 mb-3">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{note.images.length} image(s)</span>
+                    <span className="text-xs text-muted-foreground">
+                      {note.images.length} image(s)
+                    </span>
                   </div>
                 )}
 
@@ -548,14 +644,18 @@ const MemoizedNoteCard = React.memo(
               </CardContent>
             </Card>
           </TooltipTrigger>
-          <TooltipContent>{note.isPasswordProtected ? "This note is locked" : note.title}</TooltipContent>
+          <TooltipContent>
+            {note.isPasswordProtected ? "This note is locked" : note.title}
+          </TooltipContent>
         </Tooltip>
 
         {/* Mobile Context Menu */}
         <Dialog open={showMobileMenu} onOpenChange={setShowMobileMenu}>
           <DialogContent className="sm:max-w-md">
             <div className="text-center mb-4">
-              <DialogTitle className="text-lg font-semibold">{note.title}</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">
+                {note.title}
+              </DialogTitle>
               <p className="text-sm text-muted-foreground">Choose an action</p>
             </div>
 
@@ -565,8 +665,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onEdit(note)
+                      setShowMobileMenu(false);
+                      onEdit(note);
                     }}
                     className="flex items-center gap-2"
                   >
@@ -577,23 +677,27 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onPin(note.id)
+                      setShowMobileMenu(false);
+                      onPin(note.id);
                     }}
                     className="flex items-center gap-2"
                   >
-                    <Star className={`h-4 w-4 ${note.isPinned ? "fill-primary text-primary" : ""}`} />
+                    <Star
+                      className={`h-4 w-4 ${
+                        note.isPinned ? "fill-primary text-primary" : ""
+                      }`}
+                    />
                     {note.isPinned ? "Unpin" : "Pin"}
                   </Button>
 
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
+                      setShowMobileMenu(false);
                       if (note.isPasswordProtected) {
-                        onRemovePassword(note)
+                        onRemovePassword(note);
                       } else {
-                        onSetPassword(note)
+                        onSetPassword(note);
                       }
                     }}
                     className="flex items-center gap-2"
@@ -605,8 +709,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onDownload(note, "txt")
+                      setShowMobileMenu(false);
+                      onDownload(note, "txt");
                     }}
                     className="flex items-center gap-2"
                   >
@@ -617,8 +721,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onArchive(note.id)
+                      setShowMobileMenu(false);
+                      onArchive(note.id);
                     }}
                     className="flex items-center gap-2"
                   >
@@ -629,8 +733,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onTrash(note.id)
+                      setShowMobileMenu(false);
+                      onTrash(note.id);
                     }}
                     className="flex items-center gap-2 text-destructive hover:text-destructive"
                   >
@@ -645,8 +749,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onRestore(note.id)
+                      setShowMobileMenu(false);
+                      onRestore(note.id);
                     }}
                     className="flex items-center gap-2 text-green-600 hover:text-green-700"
                   >
@@ -657,8 +761,8 @@ const MemoizedNoteCard = React.memo(
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setShowMobileMenu(false)
-                      onDelete(note.id)
+                      setShowMobileMenu(false);
+                      onDelete(note.id);
                     }}
                     className="flex items-center gap-2 text-destructive hover:text-destructive"
                   >
@@ -669,38 +773,44 @@ const MemoizedNoteCard = React.memo(
               )}
             </div>
 
-            <Button variant="ghost" onClick={() => setShowMobileMenu(false)} className="w-full mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => setShowMobileMenu(false)}
+              className="w-full mt-4"
+            >
               Cancel
             </Button>
           </DialogContent>
         </Dialog>
       </>
-    )
-  },
-)
+    );
+  }
+);
 
-MemoizedNoteCard.displayName = "MemoizedNoteCard"
+MemoizedNoteCard.displayName = "MemoizedNoteCard";
 
 export default function NotesApp() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [editingNote, setEditingNote] = useState<Note | null>(null)
-  const [viewingNote, setViewingNote] = useState<Note | null>(null)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [sortBy, setSortBy] = useState<"date" | "title" | "category">("date")
-  const [activeSection, setActiveSection] = useState<"home" | "archive" | "trash">("home")
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState("")
-  const [passwordError, setPasswordError] = useState("")
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [viewingNote, setViewingNote] = useState<Note | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<"date" | "title" | "category">("date");
+  const [activeSection, setActiveSection] = useState<
+    "home" | "archive" | "trash"
+  >("home");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [passwordDialog, setPasswordDialog] = useState<{
-    isOpen: boolean
-    noteId: string
+    isOpen: boolean;
+    noteId: string;
     action:
       | "view"
       | "edit"
@@ -711,61 +821,67 @@ export default function NotesApp() {
       | "delete"
       | "download"
       | "setPassword"
-      | "removePassword"
-    note?: Note
+      | "removePassword";
+    note?: Note;
   }>({
     isOpen: false,
     noteId: "",
     action: "view",
-  })
-  const [passwordInput, setPasswordInput] = useState("")
-  const [passwordError2, setPasswordError2] = useState("")
-  const [categories, setCategories] = useState<string[]>([])
-  const [showCategoryManager, setShowCategoryManager] = useState(false)
+  });
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError2, setPasswordError2] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
 
   // Subscribe to Firebase notes
   useEffect(() => {
     const unsubscribe = subscribeToNotes((firebaseNotes: FirebaseNote[]) => {
       // Explicitly type firebaseNotes
-      const convertedNotes = firebaseNotes.map(convertFirebaseNote)
-      setNotes(convertedNotes)
-      setLoading(false)
-    })
+      const convertedNotes = firebaseNotes.map(convertFirebaseNote);
+      setNotes(convertedNotes);
+      setLoading(false);
+    });
 
-    return () => unsubscribe()
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
   // Authentication check
   const getCurrentTimePassword = useCallback(() => {
-    const now = new Date()
-    let hours = now.getHours()
-    const minutes = now.getMinutes()
-    const ampm = hours >= 12 ? "pm" : "am"
-    hours = hours % 12
-    hours = hours ? hours : 12
-    const timeStr = `${hours}${minutes.toString().padStart(2, "0")}${ampm}`
-    return timeStr
-  }, [])
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+    const ampm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const timeStr = `${hours}${minutes.toString().padStart(2, "0")}${ampm}`;
+    return timeStr;
+  }, []);
 
   const handlePasswordSubmit = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault()
-      const correctPassword = getCurrentTimePassword()
+      e.preventDefault();
+      const correctPassword = getCurrentTimePassword();
       if (password === correctPassword) {
-        setIsAuthenticated(true)
-        setPasswordError("")
+        setIsAuthenticated(true);
+        setPasswordError("");
       } else {
-        setPasswordError(`Wrong password!`)
-        setPassword("")
+        setPasswordError(`Wrong password!`);
+        setPassword("");
       }
     },
-    [password, getCurrentTimePassword],
-  )
+    [password, getCurrentTimePassword]
+  );
 
   // Note operations with Firebase
   const handleSaveNote = useCallback(
-    async (noteData: { title: string; content: string; category: string; tags: string; images: string[] }) => {
-      if (!noteData.title.trim()) return
+    async (noteData: {
+      title: string;
+      content: string;
+      category: string;
+      tags: string;
+      images: string[];
+    }) => {
+      if (!noteData.title.trim()) return;
 
       try {
         const noteToSave = {
@@ -780,145 +896,160 @@ export default function NotesApp() {
           isArchived: editingNote?.isArchived || false,
           isTrashed: editingNote?.isTrashed || false,
           images: noteData.images,
-        }
+        };
 
         if (editingNote) {
-          await updateNote(editingNote.id, noteToSave)
+          await updateNote(editingNote.id, noteToSave);
         } else {
-          await addNote(noteToSave)
+          await addNote(noteToSave);
         }
 
-        setIsDialogOpen(false)
-        setEditingNote(null)
+        setIsDialogOpen(false);
+        setEditingNote(null);
       } catch (error) {
-        console.error("Error saving note:", error)
-        alert("Error saving note. Please try again.")
+        console.error("Error saving note:", error);
+        alert("Error saving note. Please try again.");
       }
     },
-    [editingNote],
-  )
+    [editingNote]
+  );
 
   const handleNewNote = useCallback(() => {
-    setEditingNote(null)
-    setIsDialogOpen(true)
-  }, [])
+    setEditingNote(null);
+    setIsDialogOpen(true);
+  }, []);
 
   const handleCloseEditor = useCallback(() => {
-    setIsDialogOpen(false)
-    setEditingNote(null)
-  }, [])
+    setIsDialogOpen(false);
+    setEditingNote(null);
+  }, []);
 
   const handleDeleteNote = useCallback(async (id: string) => {
     try {
-      await deleteNote(id)
-      setIsViewDialogOpen(false)
+      await deleteNote(id);
+      setIsViewDialogOpen(false);
     } catch (error) {
-      console.error("Error deleting note:", error)
-      alert("Error deleting note. Please try again.")
+      console.error("Error deleting note:", error);
+      alert("Error deleting note. Please try again.");
     }
-  }, [])
+  }, []);
 
   const handlePinNote = useCallback(
     async (id: string) => {
       try {
-        const note = notes.find((n) => n.id === id)
+        const note = notes.find((n) => n.id === id);
         if (note) {
-          await updateNote(id, { isPinned: !note.isPinned })
+          await updateNote(id, { isPinned: !note.isPinned });
         }
       } catch (error) {
-        console.error("Error updating note:", error)
+        console.error("Error updating note:", error);
       }
     },
-    [notes],
-  )
+    [notes]
+  );
 
   const handleArchiveNote = useCallback(
     async (id: string) => {
       try {
-        const note = notes.find((n) => n.id === id)
+        const note = notes.find((n) => n.id === id);
         if (note) {
           await updateNote(id, {
             isArchived: !note.isArchived,
             isTrashed: false,
             isPinned: false,
-          })
+          });
         }
-        setIsViewDialogOpen(false)
+        setIsViewDialogOpen(false);
       } catch (error) {
-        console.error("Error updating note:", error)
+        console.error("Error updating note:", error);
       }
     },
-    [notes],
-  )
+    [notes]
+  );
 
   const handleTrashNote = useCallback(
     async (id: string) => {
       try {
-        const note = notes.find((n) => n.id === id)
+        const note = notes.find((n) => n.id === id);
         if (note) {
           await updateNote(id, {
             isTrashed: !note.isTrashed,
             isArchived: false,
             isPinned: false,
-          })
+          });
         }
-        setIsViewDialogOpen(false)
+        setIsViewDialogOpen(false);
       } catch (error) {
-        console.error("Error updating note:", error)
+        console.error("Error updating note:", error);
       }
     },
-    [notes],
-  )
+    [notes]
+  );
 
   const handleRestoreNote = useCallback(async (id: string) => {
     try {
-      await updateNote(id, { isTrashed: false, isArchived: false })
+      await updateNote(id, { isTrashed: false, isArchived: false });
     } catch (error) {
-      console.error("Error restoring note:", error)
+      console.error("Error restoring note:", error);
     }
-  }, [])
+  }, []);
 
   const handleViewNote = useCallback((note: Note) => {
-    setViewingNote(note)
-    setIsViewDialogOpen(true)
-  }, [])
+    setViewingNote(note);
+    setIsViewDialogOpen(true);
+  }, []);
 
   const handleEditNote = useCallback((note: Note) => {
-    setEditingNote(note)
-    setIsDialogOpen(true)
-    setIsViewDialogOpen(false)
-  }, [])
+    setEditingNote(note);
+    setIsDialogOpen(true);
+    setIsViewDialogOpen(false);
+  }, []);
 
-  const downloadNote = useCallback((note: Note, format: "txt" | "pdf" | "csv") => {
-    const timestamp = new Date().toISOString().split("T")[0]
-    const filename = `${note.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_${timestamp}`
+  const downloadNote = useCallback(
+    (note: Note, format: "txt" | "pdf" | "csv") => {
+      const timestamp = new Date().toISOString().split("T")[0];
+      const filename = `${note.title
+        .replace(/[^a-z0-9]/gi, "_")
+        .toLowerCase()}_${timestamp}`;
 
-    switch (format) {
-      case "txt":
-        const txtContent = `Title: ${note.title}\nCategory: ${note.category}\nTags: ${note.tags.join(", ")}\nCreated: ${new Date(note.createdAt).toLocaleString()}\nUpdated: ${new Date(note.updatedAt).toLocaleString()}\n\nContent:\n${note.content}`
-        const txtBlob = new Blob([txtContent], { type: "text/plain" })
-        const txtUrl = URL.createObjectURL(txtBlob)
-        const txtLink = document.createElement("a")
-        txtLink.href = txtUrl
-        txtLink.download = `${filename}.txt`
-        txtLink.click()
-        URL.revokeObjectURL(txtUrl)
-        break
+      switch (format) {
+        case "txt":
+          const txtContent = `Title: ${note.title}\nCategory: ${
+            note.category
+          }\nTags: ${note.tags.join(", ")}\nCreated: ${new Date(
+            note.createdAt
+          ).toLocaleString()}\nUpdated: ${new Date(
+            note.updatedAt
+          ).toLocaleString()}\n\nContent:\n${note.content}`;
+          const txtBlob = new Blob([txtContent], { type: "text/plain" });
+          const txtUrl = URL.createObjectURL(txtBlob);
+          const txtLink = document.createElement("a");
+          txtLink.href = txtUrl;
+          txtLink.download = `${filename}.txt`;
+          txtLink.click();
+          URL.revokeObjectURL(txtUrl);
+          break;
 
-      case "csv":
-        const csvContent = `Title,Category,Tags,Created,Updated,Content\n"${note.title}","${note.category}","${note.tags.join("; ")}","${new Date(note.createdAt).toLocaleString()}","${new Date(note.updatedAt).toLocaleString()}","${note.content.replace(/"/g, '""')}"`
-        const csvBlob = new Blob([csvContent], { type: "text/csv" })
-        const csvUrl = URL.createObjectURL(csvBlob)
-        const csvLink = document.createElement("a")
-        csvLink.href = csvUrl
-        csvLink.download = `${filename}.csv`
-        csvLink.click()
-        URL.revokeObjectURL(csvUrl)
-        break
+        case "csv":
+          const csvContent = `Title,Category,Tags,Created,Updated,Content\n"${
+            note.title
+          }","${note.category}","${note.tags.join("; ")}","${new Date(
+            note.createdAt
+          ).toLocaleString()}","${new Date(
+            note.updatedAt
+          ).toLocaleString()}","${note.content.replace(/"/g, '""')}"`;
+          const csvBlob = new Blob([csvContent], { type: "text/csv" });
+          const csvUrl = URL.createObjectURL(csvBlob);
+          const csvLink = document.createElement("a");
+          csvLink.href = csvUrl;
+          csvLink.download = `${filename}.csv`;
+          csvLink.click();
+          URL.revokeObjectURL(csvUrl);
+          break;
 
-      case "pdf":
-        // Simple PDF generation using HTML to PDF approach
-        const pdfContent = `
+        case "pdf":
+          // Simple PDF generation using HTML to PDF approach
+          const pdfContent = `
           <html>
             <head>
               <title>${note.title}</title>
@@ -942,131 +1073,137 @@ export default function NotesApp() {
               <div class="content">${note.content}</div>
             </body>
           </html>
-        `
-        const pdfWindow = window.open("", "_blank")
-        if (pdfWindow) {
-          pdfWindow.document.write(pdfContent)
-          pdfWindow.document.close()
-          pdfWindow.print()
-        }
-        break
-    }
-  }, [])
+        `;
+          const pdfWindow = window.open("", "_blank");
+          if (pdfWindow) {
+            pdfWindow.document.write(pdfContent);
+            pdfWindow.document.close();
+            pdfWindow.print();
+          }
+          break;
+      }
+    },
+    []
+  );
 
-  const verifyPassword = useCallback((note: Note, inputPassword: string): boolean => {
-    if (!note.isPasswordProtected || !note.password) {
-      return true
-    }
-    return note.password === inputPassword
-  }, [])
+  const verifyPassword = useCallback(
+    (note: Note, inputPassword: string): boolean => {
+      if (!note.isPasswordProtected || !note.password) {
+        return true;
+      }
+      return note.password === inputPassword;
+    },
+    []
+  );
 
   const handlePasswordSubmit2 = useCallback(async () => {
-    const note = notes.find((n) => n.id === passwordDialog.noteId)
-    if (!note) return
+    const note = notes.find((n) => n.id === passwordDialog.noteId);
+    if (!note) return;
 
     if (passwordDialog.action === "setPassword") {
       if (!passwordInput.trim()) {
-        setPasswordError2("Please enter a password")
-        return
+        setPasswordError2("Please enter a password");
+        return;
       }
       try {
-        await setNotePassword(note.id, passwordInput)
-        setPasswordDialog({ isOpen: false, noteId: "", action: "view" })
-        setPasswordInput("")
-        setPasswordError2("")
+        await setNotePassword(note.id, passwordInput);
+        setPasswordDialog({ isOpen: false, noteId: "", action: "view" });
+        setPasswordInput("");
+        setPasswordError2("");
       } catch (error) {
-        setPasswordError2("Failed to set password")
+        setPasswordError2("Failed to set password");
       }
-      return
+      return;
     }
 
     if (passwordDialog.action === "removePassword") {
       if (!verifyPassword(note, passwordInput)) {
-        setPasswordError2("Incorrect password")
-        return
+        setPasswordError2("Incorrect password");
+        return;
       }
       try {
-        await removeNotePassword(note.id)
-        setPasswordDialog({ isOpen: false, noteId: "", action: "view" })
-        setPasswordInput("")
-        setPasswordError2("")
+        await removeNotePassword(note.id);
+        setPasswordDialog({ isOpen: false, noteId: "", action: "view" });
+        setPasswordInput("");
+        setPasswordError2("");
       } catch (error) {
-        setPasswordError2("Failed to remove password")
+        setPasswordError2("Failed to remove password");
       }
-      return
+      return;
     }
 
     if (!verifyPassword(note, passwordInput)) {
-      setPasswordError2("Incorrect password")
-      return
+      setPasswordError2("Incorrect password");
+      return;
     }
 
     if (note.isPasswordProtected && passwordDialog.action === "view") {
       try {
-        const fullContent = await getLockedNoteContent(note.id)
+        const fullContent = await getLockedNoteContent(note.id);
         // Update the note with full content
-        const updatedNote = { ...note, content: fullContent }
-        setViewingNote(updatedNote)
+        const updatedNote = { ...note, content: fullContent };
+        setViewingNote(updatedNote);
       } catch (error) {
-        setPasswordError2("Failed to load note content")
-        return
+        setPasswordError2("Failed to load note content");
+        return;
       }
     }
 
     // Execute the original action
-    setPasswordDialog({ isOpen: false, noteId: "", action: "view" })
-    setPasswordInput("")
-    setPasswordError2("")
+    setPasswordDialog({ isOpen: false, noteId: "", action: "view" });
+    setPasswordInput("");
+    setPasswordError2("");
 
     switch (passwordDialog.action) {
       case "view":
         // Already handled above for locked notes
         if (!note.isPasswordProtected) {
-          handleViewNote(note)
+          handleViewNote(note);
         }
-        break
+        break;
       case "edit":
         if (note.isPasswordProtected) {
           try {
-            const fullContent = await getLockedNoteContent(note.id)
-            const updatedNote = { ...note, content: fullContent }
-            handleEditNote(updatedNote)
+            const fullContent = await getLockedNoteContent(note.id);
+            const updatedNote = { ...note, content: fullContent };
+            handleEditNote(updatedNote);
           } catch (error) {
-            console.error("Failed to load note for editing")
+            console.error("Failed to load note for editing");
           }
         } else {
-          handleEditNote(note)
+          handleEditNote(note);
         }
-        break
+        break;
       case "pin":
-        handlePinNote(note.id)
-        break
+        handlePinNote(note.id);
+        break;
       case "archive":
-        handleArchiveNote(note.id)
-        break
+        handleArchiveNote(note.id);
+        break;
       case "trash":
-        handleTrashNote(note.id)
-        break
+        handleTrashNote(note.id);
+        break;
       case "restore":
-        handleRestoreNote(note.id)
-        break
+        handleRestoreNote(note.id);
+        break;
       case "delete":
-        handleDeleteNote(note.id)
-        break
+        handleDeleteNote(note.id);
+        break;
       case "download":
         if (passwordDialog.note) {
           if (note.isPasswordProtected) {
             getLockedNoteContent(note.id).then((fullContent) => {
-              const updatedNote = { ...note, content: fullContent }
-              const format = (passwordDialog.note as any).downloadFormat || "txt"
-              downloadNote(updatedNote, format)
-            })
+              const updatedNote = { ...note, content: fullContent };
+              const format =
+                (passwordDialog.note as any).downloadFormat || "txt";
+              downloadNote(updatedNote, format);
+            });
           } else {
-            const format = (passwordDialog.note as any).downloadFormat || "txt"
-            downloadNote(passwordDialog.note, format)
+            const format = (passwordDialog.note as any).downloadFormat || "txt";
+            downloadNote(passwordDialog.note, format);
           }
         }
-        break
+        break;
     }
   }, [
     passwordDialog,
@@ -1081,7 +1218,7 @@ export default function NotesApp() {
     handleDeleteNote,
     handleViewNote, // Added handleViewNote here
     downloadNote, // Added downloadNote here
-  ])
+  ]);
 
   const handleDownload = useCallback(
     (note: Note, format: "txt" | "pdf" | "csv") => {
@@ -1091,61 +1228,73 @@ export default function NotesApp() {
           noteId: note.id,
           action: "download",
           note: { ...note, downloadFormat: format } as any,
-        })
-        setPasswordInput("")
-        setPasswordError2("")
+        });
+        setPasswordInput("");
+        setPasswordError2("");
       } else {
-        downloadNote(note, format)
+        downloadNote(note, format);
       }
     },
-    [downloadNote],
-  )
+    [downloadNote]
+  );
 
   const executeProtectedAction = useCallback(
-    (note: Note, action: typeof passwordDialog.action, additionalData?: any) => {
+    (
+      note: Note,
+      action: typeof passwordDialog.action,
+      additionalData?: any
+    ) => {
       if (note.isPasswordProtected && action !== "setPassword") {
         setPasswordDialog({
           isOpen: true,
           noteId: note.id,
           action,
           note: additionalData ? { ...note, ...additionalData } : note,
-        })
-        setPasswordInput("")
-        setPasswordError2("")
+        });
+        setPasswordInput("");
+        setPasswordError2("");
       } else {
         // Execute action directly
         switch (action) {
           case "view":
-            handleViewNote(note)
-            break
+            handleViewNote(note);
+            break;
           case "edit":
-            handleEditNote(note)
-            break
+            handleEditNote(note);
+            break;
           case "pin":
-            handlePinNote(note.id)
-            break
+            handlePinNote(note.id);
+            break;
           case "archive":
-            handleArchiveNote(note.id)
-            break
+            handleArchiveNote(note.id);
+            break;
           case "trash":
-            handleTrashNote(note.id)
-            break
+            handleTrashNote(note.id);
+            break;
           case "restore":
-            handleRestoreNote(note.id)
-            break
+            handleRestoreNote(note.id);
+            break;
           case "delete":
-            handleDeleteNote(note.id)
-            break
+            handleDeleteNote(note.id);
+            break;
           case "setPassword":
-            setPasswordDialog({ isOpen: true, noteId: note.id, action: "setPassword" })
-            setPasswordInput("")
-            setPasswordError2("")
-            break
+            setPasswordDialog({
+              isOpen: true,
+              noteId: note.id,
+              action: "setPassword",
+            });
+            setPasswordInput("");
+            setPasswordError2("");
+            break;
           case "removePassword":
-            setPasswordDialog({ isOpen: true, noteId: note.id, action: "removePassword" })
-            setPasswordInput("")
-            setPasswordError2("")
-            break
+            setPasswordDialog({
+              isOpen: true,
+              noteId: note.id,
+              action: "removePassword",
+            });
+            setPasswordInput("");
+            setPasswordError2("");
+            break;
         }
       }
     },
@@ -1157,22 +1306,22 @@ export default function NotesApp() {
       handleTrashNote,
       handleRestoreNote,
       handleDeleteNote,
-    ],
-  )
+    ]
+  );
 
   const handleSetPassword = useCallback(
     (note: Note) => {
-      executeProtectedAction(note, "setPassword")
+      executeProtectedAction(note, "setPassword");
     },
-    [executeProtectedAction],
-  )
+    [executeProtectedAction]
+  );
 
   const handleRemovePassword = useCallback(
     (note: Note) => {
-      executeProtectedAction(note, "removePassword")
+      executeProtectedAction(note, "removePassword");
     },
-    [executeProtectedAction],
-  )
+    [executeProtectedAction]
+  );
 
   // Optimized filtered notes with useMemo
   const filteredNotes = useMemo(() => {
@@ -1181,34 +1330,49 @@ export default function NotesApp() {
         const matchesSearch =
           note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          note.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          note.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase())
+          );
 
-        const matchesCategory = selectedCategory === "all" || note.category === selectedCategory
+        const matchesCategory =
+          selectedCategory === "all" || note.category === selectedCategory;
 
         if (activeSection === "home") {
-          return matchesSearch && matchesCategory && !note.isArchived && !note.isTrashed
+          return (
+            matchesSearch &&
+            matchesCategory &&
+            !note.isArchived &&
+            !note.isTrashed
+          );
         } else if (activeSection === "archive") {
-          return matchesSearch && matchesCategory && note.isArchived && !note.isTrashed
+          return (
+            matchesSearch &&
+            matchesCategory &&
+            note.isArchived &&
+            !note.isTrashed
+          );
         } else {
-          return matchesSearch && matchesCategory && note.isTrashed
+          return matchesSearch && matchesCategory && note.isTrashed;
         }
       })
       .sort((a, b) => {
         if (activeSection === "home") {
-          if (a.isPinned && !b.isPinned) return -1
-          if (!a.isPinned && b.isPinned) return 1
+          if (a.isPinned && !b.isPinned) return -1;
+          if (!a.isPinned && b.isPinned) return 1;
         }
 
         switch (sortBy) {
           case "title":
-            return a.title.localeCompare(b.title)
+            return a.title.localeCompare(b.title);
           case "category":
-            return a.category.localeCompare(b.category)
+            return a.category.localeCompare(b.category);
           default:
-            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+            return (
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+            );
         }
-      })
-  }, [notes, searchTerm, selectedCategory, activeSection, sortBy])
+      });
+  }, [notes, searchTerm, selectedCategory, activeSection, sortBy]);
 
   // Render note content with markdown - memoized for performance
   const renderNoteContent = useMemo(() => {
@@ -1223,152 +1387,174 @@ export default function NotesApp() {
         // Links
         .replace(
           /\[(.*?)\]$$(.*?)$$/g, // Corrected regex for links
-          '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">$1</a>',
+          '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">$1</a>'
         )
         // Headings
-        .replace(/^# (.*?)$/gm, "<h1 class='text-3xl font-bold my-6 text-gray-900 dark:text-gray-100'>$1</h1>")
-        .replace(/^## (.*?)$/gm, "<h2 class='text-2xl font-bold my-5 text-gray-900 dark:text-gray-100'>$1</h2>")
-        .replace(/^### (.*?)$/gm, "<h3 class='text-xl font-bold my-4 text-gray-900 dark:text-gray-100'>$1</h3>")
+        .replace(
+          /^# (.*?)$/gm,
+          "<h1 class='text-3xl font-bold my-6 text-gray-900 dark:text-gray-100'>$1</h1>"
+        )
+        .replace(
+          /^## (.*?)$/gm,
+          "<h2 class='text-2xl font-bold my-5 text-gray-900 dark:text-gray-100'>$1</h2>"
+        )
+        .replace(
+          /^### (.*?)$/gm,
+          "<h3 class='text-xl font-bold my-4 text-gray-900 dark:text-gray-100'>$1</h3>"
+        )
         // Blockquotes
         .replace(
           /^> (.*?)$/gm,
-          "<blockquote class='border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300 bg-gray-gray-50 dark:bg-gray-800 py-2 rounded-r'>$1</blockquote>",
+          "<blockquote class='border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300 bg-gray-gray-50 dark:bg-gray-800 py-2 rounded-r'>$1</blockquote>"
         )
         // Inline code
         .replace(
           /`([^`]+)`/g,
-          "<code class='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-red-600 dark:text-red-400'>$1</code>",
+          "<code class='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-red-600 dark:text-red-400'>$1</code>"
         )
         // Code blocks
         .replace(
           /```([\s\S]*?)```/g,
-          "<pre class='bg-gray-100 dark:bg-gray-900 p-4 rounded-md overflow-x-auto my-4 border border-gray-200 dark:border-gray-700'><code class='text-sm font-mono text-gray-800 dark:text-gray-200'>$1</code></pre>",
+          "<pre class='bg-gray-100 dark:bg-gray-900 p-4 rounded-md overflow-x-auto my-4 border border-gray-200 dark:border-gray-700'><code class='text-sm font-mono text-gray-800 dark:text-gray-200'>$1</code></pre>"
         )
         // Checkboxes
         .replace(
           /^- \[ \] (.*?)$/gm,
-          "<div class='flex items-start gap-2 my-2'><input type='checkbox' disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300'>$1</span></div>",
+          "<div class='flex items-start gap-2 my-2'><input type='checkbox' disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300'>$1</span></div>"
         )
         .replace(
           /^- \[x\] (.*?)$/gm,
-          "<div class='flex items-start gap-2 my-2'><input type='checkbox' checked disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300 line-through'>$1</span></div>",
+          "<div class='flex items-start gap-2 my-2'><input type='checkbox' checked disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300 line-through'>$1</span></div>"
         )
         // Bullet lists
-        .replace(/^- (.*?)$/gm, "<li class='ml-6 list-disc my-1 text-gray-700 dark:text-gray-300'>$1</li>")
+        .replace(
+          /^- (.*?)$/gm,
+          "<li class='ml-6 list-disc my-1 text-gray-700 dark:text-gray-300'>$1</li>"
+        )
         // Numbered lists
-        .replace(/^[0-9]+\. (.*?)$/gm, "<li class='ml-6 list-decimal my-1 text-gray-700 dark:text-gray-300'>$1</li>")
+        .replace(
+          /^[0-9]+\. (.*?)$/gm,
+          "<li class='ml-6 list-decimal my-1 text-gray-700 dark:text-gray-300'>$1</li>"
+        );
 
       // Handle tables
-      const tableRegex = /\|(.+)\|\n\|:?-+:?\|(?:\s*:?-+:?\|)*\n((?:\|.+\|\n?)*)/g // Adjusted regex for better table detection
-      processedContent = processedContent.replace(tableRegex, (match, header, separator, rows) => {
-        const headerCells = header
-          .split("|")
-          .map((cell: string) => cell.trim())
-          .filter((cell: string) => cell)
-          .map(
-            (cell: string) =>
-              `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100">${cell}</th>`,
-          )
-          .join("")
+      const tableRegex =
+        /\|(.+)\|\n\|:?-+:?\|(?:\s*:?-+:?\|)*\n((?:\|.+\|\n?)*)/g; // Adjusted regex for better table detection
+      processedContent = processedContent.replace(
+        tableRegex,
+        (match, header, separator, rows) => {
+          const headerCells = header
+            .split("|")
+            .map((cell: string) => cell.trim())
+            .filter((cell: string) => cell)
+            .map(
+              (cell: string) =>
+                `<th class="border border-gray-300 dark:border-gray-600 px-4 py-2 bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-gray-100">${cell}</th>`
+            )
+            .join("");
 
-        const rowCells = rows
-          .trim()
-          .split("\n")
-          .map((row: string) => {
-            const cells = row
-              .split("|")
-              .map((cell: string) => cell.trim())
-              .filter((cell: string) => cell)
-              .map(
-                (cell: string) =>
-                  `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">${cell}</td>`,
-              )
-              .join("")
-            return `<tr>${cells}</tr>`
-          })
-          .join("")
+          const rowCells = rows
+            .trim()
+            .split("\n")
+            .map((row: string) => {
+              const cells = row
+                .split("|")
+                .map((cell: string) => cell.trim())
+                .filter((cell: string) => cell)
+                .map(
+                  (cell: string) =>
+                    `<td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300">${cell}</td>`
+                )
+                .join("");
+              return `<tr>${cells}</tr>`;
+            })
+            .join("");
 
-        return `<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table></div>`
-      })
+          return `<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table></div>`;
+        }
+      );
 
       // Convert line breaks
-      processedContent = processedContent.replace(/\n/g, "<br>")
+      processedContent = processedContent.replace(/\n/g, "<br>");
 
-      return processedContent
-    }
-  }, [])
+      return processedContent;
+    };
+  }, []);
 
   const getSectionTitle = useCallback(() => {
     switch (activeSection) {
       case "home":
-        return "Shared Notes"
+        return "Shared Notes";
       case "archive":
-        return "Archived Notes"
+        return "Archived Notes";
       case "trash":
-        return "Trash"
+        return "Trash";
     }
-  }, [activeSection])
+  }, [activeSection]);
 
   const getEmptyStateMessage = useCallback(() => {
     if (searchTerm || selectedCategory !== "all") {
-      return "Try adjusting your search or filters"
+      return "Try adjusting your search or filters";
     }
 
     switch (activeSection) {
       case "home":
-        return "Create your first note to get started"
+        return "Create your first note to get started";
       case "archive":
-        return "No archived notes found"
+        return "No archived notes found";
       case "trash":
-        return "Trash is empty"
+        return "Trash is empty";
     }
-  }, [searchTerm, selectedCategory, activeSection])
+  }, [searchTerm, selectedCategory, activeSection]);
 
-  const handleSectionChange = useCallback((section: "home" | "archive" | "trash") => {
-    setActiveSection(section)
-    setIsSheetOpen(false)
-  }, [])
+  const handleSectionChange = useCallback(
+    (section: "home" | "archive" | "trash") => {
+      setActiveSection(section);
+      setIsSheetOpen(false);
+    },
+    []
+  );
 
   const handleCategoryChange = useCallback((category: string) => {
-    setSelectedCategory(category)
-    setActiveSection("home")
-    setIsSheetOpen(false)
-  }, [])
+    setSelectedCategory(category);
+    setActiveSection("home");
+    setIsSheetOpen(false);
+  }, []);
 
   // Loading state
   useEffect(() => {
     const loadCategories = async () => {
-      const categoryManager = CategoryManager.getInstance()
-      await categoryManager.loadCategoriesFromFirebase()
-      const allCategories = categoryManager.getAllCategories()
-      setCategories(allCategories.map((cat) => cat.name))
-    }
+      const categoryManager = CategoryManager.getInstance();
+      await categoryManager.loadCategoriesFromFirebase();
+      const allCategories = categoryManager.getAllCategories();
+      setCategories(allCategories.map((cat) => cat.name));
+    };
 
-    loadCategories()
+    loadCategories();
 
     // Listen for category updates
     const handleCategoryUpdate = () => {
-      loadCategories()
-    }
-    window.addEventListener("categoriesUpdated", handleCategoryUpdate)
+      loadCategories();
+    };
+    window.addEventListener("categoriesUpdated", handleCategoryUpdate);
 
     return () => {
-      window.removeEventListener("categoriesUpdated", handleCategoryUpdate)
-    }
-  }, [])
+      window.removeEventListener("categoriesUpdated", handleCategoryUpdate);
+    };
+  }, []);
 
-function Loader() {
-  return (
-    <div className="w-40 h-40 mx-auto mb-4">
-      <Lottie animationData={colouredLoader} loop={true} />
-    </div>
-  );
-}
+  function Loader() {
+    return (
+      <div className="w-40 h-40 mx-auto mb-4">
+        <Lottie animationData={colouredLoader} loop={true} />
+      </div>
+    );
+  }
 
-if (loading) {
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <style>{`
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <style>{`
         .loader {
           --background: linear-gradient(135deg, #23C4F8, #275EFE);
           --shadow: rgba(39, 94, 254, 0.28);
@@ -1542,59 +1728,56 @@ if (loading) {
           }
         }
       `}</style>
-      <div className="text-center">
-        <div className="loader">
-          <div>
-            <ul>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-              <li>
-                <svg fill="currentColor" viewBox="0 0 90 120">
-                  <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
-                </svg>
-              </li>
-            </ul>
+        <div className="text-center">
+          <div className="loader">
+            <div>
+              <ul>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z" />
+                  </svg>
+                </li>
+              </ul>
+            </div>
+            <span>Loading</span>
           </div>
-          <span>Loading</span>
         </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   // Authentication check
   if (!isAuthenticated) {
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-        
-      <div className="absolute top-4 right-4 w-32 h-32 opacity-80">
-        <Lottie animationData={require("./password.json")} loop={true} />
-        
-      </div>
+        <div className="absolute top-4 right-4 w-32 h-32 opacity-80">
+          <Lottie animationData={require("./password.json")} loop={true} />
+        </div>
 
         <div className="bg-background border rounded-lg p-8 w-full max-w-md mx-4 shadow-2xl">
           <div className="text-center mb-6">
@@ -1627,7 +1810,9 @@ if (loading) {
             </div>
 
             {passwordError && (
-              <div className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded">{passwordError}</div>
+              <div className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded">
+                {passwordError}
+              </div>
             )}
 
             <style>{`
@@ -1798,32 +1983,31 @@ if (loading) {
 
             <div className="flex justify-center">
               <button type="submit" className="btn-space">
-              <strong>Access Shared Notes</strong>
-              <div id="container-stars">
-                <div id="stars" />
-              </div>
-              <div id="glow">
-                <div className="circle" />
-                <div className="circle" />
-              </div>
+                <strong>Access Shared Notes</strong>
+                <div id="container-stars">
+                  <div id="stars" />
+                </div>
+                <div id="glow">
+                  <div className="circle" />
+                  <div className="circle" />
+                </div>
               </button>
             </div>
-                          <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
-                Made by{" "}
-                <a 
-                  href="http://iamthesakibalhasan.netlify.app/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <u>Sakib Al Hasan</u>
-                </a>
-              </div>
-
+            <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
+              Made by{" "}
+              <a
+                href="http://iamthesakibalhasan.netlify.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <u>Sakib Al Hasan</u>
+              </a>
+            </div>
           </form>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -1837,7 +2021,9 @@ if (loading) {
               <BookOpen className="h-5 w-5 text-primary" />
               <h1 className="text-lg font-bold">Shared Notes</h1>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">Everyone can see and edit</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Everyone can see and edit
+            </p>
           </div>
 
           <nav className="flex-1 overflow-y-auto p-2">
@@ -1886,33 +2072,58 @@ if (loading) {
             <Separator className="my-4" />
 
             <div className="space-y-2">
-              <h3 className="text-sm font-medium px-4 text-muted-foreground">Categories</h3>
+              <h3 className="text-sm font-medium px-4 text-muted-foreground">
+                Categories
+              </h3>
               <ScrollArea className="h-[calc(100vh-450px)]">
                 <div className="pr-2">
                   <ul className="space-y-1">
                     {categories.map((category) => {
-                      const categoryData = CategoryManager.getInstance().getCategoryByName(category)
+                      const categoryData =
+                        CategoryManager.getInstance().getCategoryByName(
+                          category
+                        );
                       return (
                         <li key={category}>
                           <Button
-                            variant={selectedCategory === category ? "secondary" : "ghost"}
+                            variant={
+                              selectedCategory === category
+                                ? "secondary"
+                                : "ghost"
+                            }
                             size="sm"
                             className="w-full justify-start"
                             onClick={() => {
-                              setSelectedCategory(category)
-                              setActiveSection("home")
+                              setSelectedCategory(category);
+                              setActiveSection("home");
                             }}
                           >
-                            <div className="mr-2" style={{ color: categoryData?.color }}>
-                              {getIconComponent(categoryData?.icon || "Circle", "h-3.5 w-3.5 opacity-70")}
+                            <div
+                              className="mr-2"
+                              style={{ color: categoryData?.color }}
+                            >
+                              {getIconComponent(
+                                categoryData?.icon || "Circle",
+                                "h-3.5 w-3.5 opacity-70"
+                              )}
                             </div>
                             {category}
-                            <Badge variant="outline" className="ml-auto text-xs">
-                              {notes.filter((n) => n.category === category && !n.isArchived && !n.isTrashed).length}
+                            <Badge
+                              variant="outline"
+                              className="ml-auto text-xs"
+                            >
+                              {
+                                notes.filter(
+                                  (n) =>
+                                    n.category === category &&
+                                    !n.isArchived &&
+                                    !n.isTrashed
+                                ).length
+                              }
                             </Badge>
                           </Button>
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 </div>
@@ -1938,7 +2149,11 @@ if (loading) {
               className="w-full justify-start"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === "dark" ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+              {theme === "dark" ? (
+                <Sun className="h-4 w-4 mr-2" />
+              ) : (
+                <Moon className="h-4 w-4 mr-2" />
+              )}
               {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </Button>
           </div>
@@ -1962,7 +2177,9 @@ if (loading) {
                 <BookOpen className="h-5 w-5 text-primary" />
                 <h1 className="text-lg font-bold">Shared Notes</h1>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">Everyone can see and edit</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Everyone can see and edit
+              </p>
             </div>
 
             <nav className="flex-1 p-2 overflow-y-auto">
@@ -1976,13 +2193,18 @@ if (loading) {
                     <Home className="h-4 w-4 mr-2" />
                     Home
                     <Badge variant="outline" className="ml-auto">
-                      {notes.filter((n) => !n.isArchived && !n.isTrashed).length}
+                      {
+                        notes.filter((n) => !n.isArchived && !n.isTrashed)
+                          .length
+                      }
                     </Badge>
                   </Button>
                 </li>
                 <li>
                   <Button
-                    variant={activeSection === "archive" ? "secondary" : "ghost"}
+                    variant={
+                      activeSection === "archive" ? "secondary" : "ghost"
+                    }
                     className="w-full justify-start"
                     onClick={() => handleSectionChange("archive")}
                   >
@@ -2011,28 +2233,48 @@ if (loading) {
               <Separator className="my-4" />
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium px-4 text-muted-foreground">Categories</h3>
+                <h3 className="text-sm font-medium px-4 text-muted-foreground">
+                  Categories
+                </h3>
                 <ul className="space-y-1">
                   {categories.map((category) => {
-                    const categoryData = CategoryManager.getInstance().getCategoryByName(category)
+                    const categoryData =
+                      CategoryManager.getInstance().getCategoryByName(category);
                     return (
                       <li key={category}>
                         <Button
-                          variant={selectedCategory === category ? "secondary" : "ghost"}
+                          variant={
+                            selectedCategory === category
+                              ? "secondary"
+                              : "ghost"
+                          }
                           size="sm"
                           className="w-full justify-start"
                           onClick={() => handleCategoryChange(category)}
                         >
-                          <div className="mr-2" style={{ color: categoryData?.color }}>
-                            {getIconComponent(categoryData?.icon || "Circle", "h-3.5 w-3.5 opacity-70")}
+                          <div
+                            className="mr-2"
+                            style={{ color: categoryData?.color }}
+                          >
+                            {getIconComponent(
+                              categoryData?.icon || "Circle",
+                              "h-3.5 w-3.5 opacity-70"
+                            )}
                           </div>
                           {category}
                           <Badge variant="outline" className="ml-auto text-xs">
-                            {notes.filter((n) => n.category === category && !n.isArchived && !n.isTrashed).length}
+                            {
+                              notes.filter(
+                                (n) =>
+                                  n.category === category &&
+                                  !n.isArchived &&
+                                  !n.isTrashed
+                              ).length
+                            }
                           </Badge>
                         </Button>
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
@@ -2043,8 +2285,8 @@ if (loading) {
                   size="default"
                   className="w-full justify-center gap-2 bg-primary/10 hover:bg-primary/20 border-primary/20 text-primary font-medium"
                   onClick={() => {
-                    setShowCategoryManager(true)
-                    setIsSheetOpen(false)
+                    setShowCategoryManager(true);
+                    setIsSheetOpen(false);
                   }}
                 >
                   <Plus className="h-5 w-5" />
@@ -2059,7 +2301,11 @@ if (loading) {
                 className="w-full justify-start"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
-                {theme === "dark" ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4 mr-2" />
+                ) : (
+                  <Moon className="h-4 w-4 mr-2" />
+                )}
                 {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </Button>
             </div>
@@ -2073,7 +2319,9 @@ if (loading) {
             <div className="container mx-auto px-4 py-4 max-w-7xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 md:hidden">
-                  <h1 className="text-xl font-bold ml-12">{getSectionTitle()}</h1>
+                  <h1 className="text-xl font-bold ml-12">
+                    {getSectionTitle()}
+                  </h1>
                 </div>
                 <div className="hidden md:block">
                   <div className="flex items-center gap-2">
@@ -2091,10 +2339,16 @@ if (loading) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        onClick={() =>
+                          setTheme(theme === "dark" ? "light" : "dark")
+                        }
                         className="hidden md:flex"
                       >
-                        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                        {theme === "dark" ? (
+                          <Sun className="h-4 w-4" />
+                        ) : (
+                          <Moon className="h-4 w-4" />
+                        )}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Toggle theme</TooltipContent>
@@ -2137,15 +2391,21 @@ if (loading) {
 
           {/* Note View Dialog */}
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-            <DialogContent className="max-w-full max-h-full h-screen w-screen m-0 rounded-none border-0">
+            <DialogContent className="max-w-full max-h-full h-screen w-screen m-0 rounded-none border-0 p-0">
               <div className="flex flex-col h-full">
                 <div className="border-b p-4 flex-shrink-0 bg-background">
                   <div className="flex items-center justify-between">
-                    <DialogTitle className="text-xl font-semibold">{viewingNote?.title}</DialogTitle>
+                    <DialogTitle className="text-xl font-semibold">
+                      {viewingNote?.title}
+                    </DialogTitle>
                     <div className="flex items-center gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" onClick={() => handleEditNote(viewingNote!)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditNote(viewingNote!)}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
@@ -2156,18 +2416,30 @@ if (loading) {
                         <>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => handleArchiveNote(viewingNote!.id)}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  handleArchiveNote(viewingNote!.id)
+                                }
+                              >
                                 <Archive className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              {viewingNote?.isArchived ? "Unarchive note" : "Archive note"}
+                              {viewingNote?.isArchived
+                                ? "Unarchive note"
+                                : "Archive note"}
                             </TooltipContent>
                           </Tooltip>
 
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => handleTrashNote(viewingNote!.id)}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleTrashNote(viewingNote!.id)}
+                              >
                                 <Trash className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
@@ -2192,18 +2464,23 @@ if (loading) {
                         </Tooltip>
                       )}
 
-                      <Button variant="ghost" onClick={() => setIsViewDialogOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setIsViewDialogOpen(false)}
+                      >
                         Close
                       </Button>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-y-auto">
                   {viewingNote && (
                     <div className="max-w-4xl mx-auto p-6">
                       <div className="flex flex-wrap gap-2 mb-6">
-                        <Badge className="bg-primary/10 text-primary">{viewingNote.category}</Badge>
+                        <Badge className="bg-primary/10 text-primary">
+                          {viewingNote.category}
+                        </Badge>
                         {viewingNote.tags.map((tag, index) => (
                           <Badge key={index} variant="outline">
                             <Tag className="h-3 w-3 mr-1" />
@@ -2215,24 +2492,30 @@ if (loading) {
                       <div className="text-sm text-muted-foreground mb-6 flex flex-wrap items-center gap-4">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          Created: {new Date(viewingNote.createdAt).toLocaleDateString()}
+                          Created:{" "}
+                          {new Date(viewingNote.createdAt).toLocaleDateString()}
                         </span>
                         <span className="flex items-center gap-1">
                           <Calendar className="h-4 w-4" />
-                          Updated: {new Date(viewingNote.updatedAt).toLocaleDateString()}
+                          Updated:{" "}
+                          {new Date(viewingNote.updatedAt).toLocaleDateString()}
                         </span>
                       </div>
 
                       <div
-                        className="prose prose-lg dark:prose-invert max-w-none"
+                        className="prose prose-lg dark:prose-invert max-w-none max-h-0"
                         dangerouslySetInnerHTML={{
-                          __html: renderNoteContent(viewingNote.content || "No content"),
+                          __html: renderNoteContent(
+                            viewingNote.content || "No content"
+                          ),
                         }}
                       />
 
                       {viewingNote.images && viewingNote.images.length > 0 && (
                         <div className="mt-8 space-y-4">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Images</h3>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            Images
+                          </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {viewingNote.images.map((image, index) => (
                               <img
@@ -2267,7 +2550,10 @@ if (loading) {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
                     <SelectTrigger className="w-full sm:w-48">
                       <Filter className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="All Categories" />
@@ -2282,7 +2568,12 @@ if (loading) {
                     </SelectContent>
                   </Select>
 
-                  <Select value={sortBy} onValueChange={(value: "date" | "title" | "category") => setSortBy(value)}>
+                  <Select
+                    value={sortBy}
+                    onValueChange={(value: "date" | "title" | "category") =>
+                      setSortBy(value)
+                    }
+                  >
                     <SelectTrigger className="w-full sm:w-48">
                       <SelectValue />
                     </SelectTrigger>
@@ -2293,7 +2584,7 @@ if (loading) {
                     </SelectContent>
                   </Select>
 
-                  <div className="flex gap-2">
+                  <div className="hidden sm:flex gap-2">
                     <Button
                       variant={viewMode === "grid" ? "default" : "outline"}
                       size="sm"
@@ -2302,6 +2593,7 @@ if (loading) {
                     >
                       Grid
                     </Button>
+
                     <Button
                       variant={viewMode === "list" ? "default" : "outline"}
                       size="sm"
@@ -2339,7 +2631,9 @@ if (loading) {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        filteredNotes.forEach((note) => handleRestoreNote(note.id))
+                        filteredNotes.forEach((note) =>
+                          handleRestoreNote(note.id)
+                        );
                       }}
                       disabled={filteredNotes.length === 0}
                     >
@@ -2350,7 +2644,9 @@ if (loading) {
                       variant="destructive"
                       size="sm"
                       onClick={() => {
-                        filteredNotes.forEach((note) => handleDeleteNote(note.id))
+                        filteredNotes.forEach((note) =>
+                          handleDeleteNote(note.id)
+                        );
                       }}
                       disabled={filteredNotes.length === 0}
                     >
@@ -2370,7 +2666,9 @@ if (loading) {
                   <BookOpen className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">No notes found</h3>
-                <p className="text-muted-foreground mb-4">{getEmptyStateMessage()}</p>
+                <p className="text-muted-foreground mb-4">
+                  {getEmptyStateMessage()}
+                </p>
                 {activeSection === "home" && (
                   <Button onClick={handleNewNote}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -2393,27 +2691,31 @@ if (loading) {
                     onView={(note) => executeProtectedAction(note, "view")}
                     onEdit={(note) => executeProtectedAction(note, "edit")}
                     onPin={(id) => {
-                      const note = notes.find((n) => n.id === id)
-                      if (note) executeProtectedAction(note, "pin")
+                      const note = notes.find((n) => n.id === id);
+                      if (note) executeProtectedAction(note, "pin");
                     }}
                     onArchive={(id) => {
-                      const note = notes.find((n) => n.id === id)
-                      if (note) executeProtectedAction(note, "archive")
+                      const note = notes.find((n) => n.id === id);
+                      if (note) executeProtectedAction(note, "archive");
                     }}
                     onTrash={(id) => {
-                      const note = notes.find((n) => n.id === id)
-                      if (note) executeProtectedAction(note, "trash")
+                      const note = notes.find((n) => n.id === id);
+                      if (note) executeProtectedAction(note, "trash");
                     }}
                     onRestore={(id) => {
-                      const note = notes.find((n) => n.id === id)
-                      if (note) executeProtectedAction(note, "restore")
+                      const note = notes.find((n) => n.id === id);
+                      if (note) executeProtectedAction(note, "restore");
                     }}
                     onDelete={(id) => {
-                      const note = notes.find((n) => n.id === id)
-                      if (note) executeProtectedAction(note, "delete")
+                      const note = notes.find((n) => n.id === id);
+                      if (note) executeProtectedAction(note, "delete");
                     }}
-                    onSetPassword={(note) => executeProtectedAction(note, "setPassword")}
-                    onRemovePassword={(note) => executeProtectedAction(note, "removePassword")}
+                    onSetPassword={(note) =>
+                      executeProtectedAction(note, "setPassword")
+                    }
+                    onRemovePassword={(note) =>
+                      executeProtectedAction(note, "removePassword")
+                    }
                     onDownload={handleDownload}
                   />
                 ))}
@@ -2428,9 +2730,9 @@ if (loading) {
         open={passwordDialog.isOpen}
         onOpenChange={(open) => {
           if (!open) {
-            setPasswordDialog({ isOpen: false, noteId: "", action: "view" })
-            setPasswordInput("")
-            setPasswordError("")
+            setPasswordDialog({ isOpen: false, noteId: "", action: "view" });
+            setPasswordInput("");
+            setPasswordError("");
           }
         }}
       >
@@ -2447,42 +2749,50 @@ if (loading) {
               {passwordDialog.action === "setPassword"
                 ? "Set Password"
                 : passwordDialog.action === "removePassword"
-                  ? "Remove Password"
-                  : "Password Required"}
+                ? "Remove Password"
+                : "Password Required"}
             </DialogTitle>
             <p className="text-muted-foreground mb-4">
               {passwordDialog.action === "setPassword"
                 ? "Enter a password to protect this note"
                 : passwordDialog.action === "removePassword"
-                  ? "Enter current password to remove protection"
-                  : "This note is password protected"}
+                ? "Enter current password to remove protection"
+                : "This note is password protected"}
             </p>
           </div>
 
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              handlePasswordSubmit2()
+              e.preventDefault();
+              handlePasswordSubmit2();
             }}
             className="space-y-4"
           >
             <div>
               <Label htmlFor="notePassword">
-                {passwordDialog.action === "setPassword" ? "New Password" : "Password"}
+                {passwordDialog.action === "setPassword"
+                  ? "New Password"
+                  : "Password"}
               </Label>
               <Input
                 id="notePassword"
                 type="password"
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder={passwordDialog.action === "setPassword" ? "Enter new password" : "Enter password"}
+                placeholder={
+                  passwordDialog.action === "setPassword"
+                    ? "Enter new password"
+                    : "Enter password"
+                }
                 className="text-center"
                 autoFocus
               />
             </div>
 
             {passwordError2 && (
-              <div className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded">{passwordError2}</div>
+              <div className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded">
+                {passwordError2}
+              </div>
             )}
 
             <div className="flex gap-2">
@@ -2491,9 +2801,13 @@ if (loading) {
                 variant="outline"
                 className="flex-1 bg-transparent"
                 onClick={() => {
-                  setPasswordDialog({ isOpen: false, noteId: "", action: "view" })
-                  setPasswordInput("")
-                  setPasswordError("")
+                  setPasswordDialog({
+                    isOpen: false,
+                    noteId: "",
+                    action: "view",
+                  });
+                  setPasswordInput("");
+                  setPasswordError("");
                 }}
               >
                 Cancel
@@ -2502,8 +2816,8 @@ if (loading) {
                 {passwordDialog.action === "setPassword"
                   ? "Set Password"
                   : passwordDialog.action === "removePassword"
-                    ? "Remove Password"
-                    : "Unlock"}
+                  ? "Remove Password"
+                  : "Unlock"}
               </Button>
             </div>
           </form>
@@ -2515,12 +2829,12 @@ if (loading) {
         isOpen={showCategoryManager}
         onClose={() => setShowCategoryManager(false)}
         onCategoriesUpdate={() => {
-          const categoryManager = CategoryManager.getInstance()
-          const allCategories = categoryManager.getAllCategories()
-          setCategories(allCategories.map((cat) => cat.name))
-          window.dispatchEvent(new Event("categoriesUpdated"))
+          const categoryManager = CategoryManager.getInstance();
+          const allCategories = categoryManager.getAllCategories();
+          setCategories(allCategories.map((cat) => cat.name));
+          window.dispatchEvent(new Event("categoriesUpdated"));
         }}
       />
     </TooltipProvider>
-  )
+  );
 }
