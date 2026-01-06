@@ -834,7 +834,7 @@ export function EnhancedNoteEditor({ note, onSave, onClose }: EnhancedNoteEditor
         <div className="border-b p-2 md:p-4 flex-shrink-0 bg-background">
           <div className="flex items-center justify-between mb-2 md:mb-4 gap-2">
             <h2 className="text-base md:text-xl font-semibold truncate">{note.id ? "Edit Note" : "Create New Note"}</h2>
-            <div className="flex items-center gap-1 ml-auto left-[200px] fixed">
+            <div className="flex items-center gap-1 float-right">
               {isSaving && <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">Saving...</span>}
               {lastSaved && !isSaving && (
                 <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">

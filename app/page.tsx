@@ -2402,7 +2402,7 @@ export default function NotesApp() {
 
           {/* Enhanced Note Editor Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-full max-h-[100dvh] h-[100dvh] w-full m-0 p-0 rounded-none border-0 md:max-w-[95vw] md:max-h-[95vh] md:h-[95vh] md:rounded-lg md:border">
+            <DialogContent className="max-w-full max-h-[100dvh] h-[100dvh] w-full m-0 p-0 rounded-none border-0 md:rounded-lg md:border">
               <EnhancedNoteEditor
                 note={{
                   id: editingNote?.id || "",
@@ -2417,7 +2417,7 @@ export default function NotesApp() {
               />
             </DialogContent>
           </Dialog>
-
+                {/* Save */}
           {/* Note View Dialog */}
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
             <DialogContent className="max-w-full max-h-full h-screen w-screen m-0 rounded-none border-0 p-0">

@@ -538,11 +538,11 @@ export function OptimizedNoteEditor({ note, onSave, onClose, categories }: Optim
                 <span className="text-sm text-muted-foreground">Saved {lastSaved.toLocaleTimeString()}</span>
               )}
               <Button onClick={handleSave} size="sm">
-                <Save className="h-4 w-4 mr-2" />
-                Save
+                <Save className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Save</span>
               </Button>
               <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-4 w-4" />
+                <X className="h-4 w-45" />
               </Button>
             </div>
           </div>
