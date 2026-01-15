@@ -90,3 +90,48 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Highlight.js custom theme for better readability */
+.hljs {
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+}
+.hljs-attr { color: #9cdcfe; }
+.hljs-string { color: #ce9178; }
+.hljs-number { color: #b5cea8; }
+.hljs-literal { color: #569cd6; }
+.hljs-name { color: #dcdcdc; }
+.hljs-type { color: #4ec9b0; }
+.hljs-params { color: #9cdcfe; }
+.hljs-built_in { color: #4ec9b0; }
+.hljs-keyword { color: #569cd6; }
+.hljs-selector-tag { color: #569cd6; }
+.hljs-symbol { color: #d7ba7d; }
+.hljs-comment { color: #6a9955; }
+.hljs-function { color: #dcdcdc; }
+.hljs-property { color: #9cdcfe; }
+
+      .code-block-wrapper {
+        scrollbar-width: thin;
+        scrollbar-color: #111827 #1f2937;
+      }
+      
+      .code-block-wrapper::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+      }
+      
+      .code-block-wrapper::-webkit-scrollbar-track {
+        background: #1f2937;
+        border-radius: 10px;
+      }
+      
+      .code-block-wrapper::-webkit-scrollbar-thumb {
+        background: #111827;
+        border-radius: 10px;
+        border: 2px solid #1f2937;
+      }
+      
+      .code-block-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #111827;
+      }

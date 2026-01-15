@@ -2,6 +2,8 @@
 
 import React from "react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -181,14 +183,49 @@ interface FirebaseNote {
   isPasswordProtected: boolean;
 }
 
-import type { SVGProps } from 'react';
+import type { SVGProps } from "react";
 import { Icon } from "@iconify/react";
 
 export function FluentMdl2EditCreate(props: SVGProps<SVGSVGElement>) {
-	return (<svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 2048 2048" {...props}><path fill="white" d="M226 701q-48-48-73-109t-25-128q0-71 26-131t71-105t107-70t131-26q66 0 128 23t110 71l353 353l-91 91l-195-195l-293 293l195 195l-91 91zm238-443q-43 0-81 15t-66 44t-44 65t-17 82q0 38 10 66t29 53t41 47t48 47l293-293q-26-25-47-48t-46-40t-52-28t-68-10m1584 1790l-633-158l-293-293l91-91l217 218q16-52 44-98t67-85t84-66t99-45l-218-217l91-91l293 293zm-176-176l-82-329q-47 10-87 32t-73 55t-55 73t-32 87zM1728 192q53 0 99 20t82 55t55 81t20 100q0 51-19 98t-56 83L763 1775q-9 59-37 108t-70 87t-95 57t-113 21H0v-128q11 0 23-3t22-9q25-13 41-33t25-44t13-50t4-53q0-59 20-112t58-96t86-70t109-37L1547 267q36-36 83-55t98-20M448 1920q40 0 75-15t61-41t41-61t15-75t-15-75t-41-61t-61-41t-75-15t-75 15t-61 41t-41 61t-15 75q0 104-64 192zm518-529q-32-63-75-106t-106-75l-221 221q62 24 109 71t72 110zm852-853q37-37 37-90q0-26-10-49t-27-40t-41-28t-49-10q-53 0-90 37l-759 758q61 36 103 78t78 103z"></path></svg>);
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={12}
+      height={12}
+      viewBox="0 0 2048 2048"
+      {...props}
+    >
+      <path
+        fill="white"
+        d="M226 701q-48-48-73-109t-25-128q0-71 26-131t71-105t107-70t131-26q66 0 128 23t110 71l353 353l-91 91l-195-195l-293 293l195 195l-91 91zm238-443q-43 0-81 15t-66 44t-44 65t-17 82q0 38 10 66t29 53t41 47t48 47l293-293q-26-25-47-48t-46-40t-52-28t-68-10m1584 1790l-633-158l-293-293l91-91l217 218q16-52 44-98t67-85t84-66t99-45l-218-217l91-91l293 293zm-176-176l-82-329q-47 10-87 32t-73 55t-55 73t-32 87zM1728 192q53 0 99 20t82 55t55 81t20 100q0 51-19 98t-56 83L763 1775q-9 59-37 108t-70 87t-95 57t-113 21H0v-128q11 0 23-3t22-9q25-13 41-33t25-44t13-50t4-53q0-59 20-112t58-96t86-70t109-37L1547 267q36-36 83-55t98-20M448 1920q40 0 75-15t61-41t41-61t15-75t-15-75t-41-61t-61-41t-75-15t-75 15t-61 41t-41 61t-15 75q0 104-64 192zm518-529q-32-63-75-106t-106-75l-221 221q62 24 109 71t72 110zm852-853q37-37 37-90q0-26-10-49t-27-40t-41-28t-49-10q-53 0-90 37l-759 758q61 36 103 78t78 103z"
+      ></path>
+    </svg>
+  );
 }
 export function GgWebsite(props: SVGProps<SVGSVGElement>) {
-	return (<svg xmlns="http://www.w3.org/2000/svg" width={12} height={12} viewBox="0 0 24 24" {...props}><g fill="white"><path fillRule="evenodd" d="M14 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm3 2h-2v6h2z" clipRule="evenodd"></path><path d="M6 7a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zm0 4a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2zm-1 5a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1"></path><path fillRule="evenodd" d="M4 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm16 2H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1" clipRule="evenodd"></path></g></svg>);
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={12}
+      height={12}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g fill="white">
+        <path
+          fillRule="evenodd"
+          d="M14 7a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm3 2h-2v6h2z"
+          clipRule="evenodd"
+        ></path>
+        <path d="M6 7a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zm0 4a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2zm-1 5a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1"></path>
+        <path
+          fillRule="evenodd"
+          d="M4 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zm16 2H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1"
+          clipRule="evenodd"
+        ></path>
+      </g>
+    </svg>
+  );
 }
 
 // Icon mapping function - moved outside component for better performance
@@ -334,7 +371,6 @@ const MemoizedNoteCard = React.memo(
 
     return (
       <>
-      
         <Tooltip>
           <TooltipTrigger asChild>
             <Card
@@ -1389,75 +1425,129 @@ export default function NotesApp() {
       });
   }, [notes, searchTerm, selectedCategory, activeSection, sortBy]);
 
+
+
   // Render note content with markdown - memoized for performance
   const renderNoteContent = useMemo(() => {
     return (content: string) => {
       let processedContent = content
-        // Bold text
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        // Italic text
-        .replace(/\*(.*?)\*/g, "<em>$1</em>")
-        // Strikethrough
-        .replace(/~~(.*?)~~/g, "<del>$1</del>")
-        // Links
-        .replace(
-          /\[(.*?)\]$$(.*?)$$/g, // Corrected regex for links
-          '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300">$1</a>'
-        )
-        // Headings
-        .replace(
-          /^# (.*?)$/gm,
-          "<h1 class='text-3xl font-bold my-6 text-gray-900 dark:text-gray-100'>$1</h1>"
-        )
-        .replace(
-          /^## (.*?)$/gm,
-          "<h2 class='text-2xl font-bold my-5 text-gray-900 dark:text-gray-100'>$1</h2>"
-        )
-        .replace(
-          /^### (.*?)$/gm,
-          "<h3 class='text-xl font-bold my-4 text-gray-900 dark:text-gray-100'>$1</h3>"
-        )
-        // Blockquotes
-        .replace(
-          /^> (.*?)$/gm,
-          "<blockquote class='border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300 bg-gray-gray-50 dark:bg-gray-800 py-2 rounded-r'>$1</blockquote>"
-        )
-        // Inline code
-        .replace(
-          /`([^`]+)`/g,
-          "<code class='bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-red-600 dark:text-red-400'>$1</code>"
-        )
-        // Code blocks
-        .replace(
-          /```([\s\S]*?)```/g,
-          "<pre class='bg-gray-100 dark:bg-gray-900 p-4 rounded-md overflow-x-auto my-4 border border-gray-200 dark:border-gray-700'><code class='text-sm font-mono text-gray-800 dark:text-gray-200'>$1</code></pre>"
-        )
-        // Checkboxes
-        .replace(
-          /^- \[ \] (.*?)$/gm,
-          "<div class='flex items-start gap-2 my-2'><input type='checkbox' disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300'>$1</span></div>"
-        )
-        .replace(
-          /^- \[x\] (.*?)$/gm,
-          "<div class='flex items-start gap-2 my-2'><input type='checkbox' checked disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300 line-through'>$1</span></div>"
-        )
-        // Bullet lists
-        .replace(
-          /^- (.*?)$/gm,
-          "<li class='ml-6 list-disc my-1 text-gray-700 dark:text-gray-300'>$1</li>"
-        )
-        // Numbered lists
-        .replace(
-          /^[0-9]+\. (.*?)$/gm,
-          "<li class='ml-6 list-decimal my-1 text-gray-700 dark:text-gray-300'>$1</li>"
-        );
+  /* ================= CODE BLOCKS (FIRST) ================= */
+.replace(/```([\s\S]*?)```/g, (_, code) => {
+  const trimmedCode = code.trim();
+  let highlightedCode = trimmedCode;
+  let language = 'javascript';
+  
+  // Try to detect language from first line comment
+  const firstLine = trimmedCode.split('\n')[0];
+  const langMatch = firstLine.match(/^(javascript|python|html|css|typescript|jsx|tsx|json|sql|bash|sh|xml|php|ruby|java|c|cpp)/i);
+  
+  if (langMatch) {
+    language = langMatch[1].toLowerCase();
+    // Remove language identifier from code
+    highlightedCode = trimmedCode.split('\n').slice(1).join('\n').trim();
+  }
+  
+  try {
+    if (hljs.getLanguage(language)) {
+      highlightedCode = hljs.highlight(highlightedCode, { language }).value;
+    } else {
+      highlightedCode = hljs.highlightAuto(highlightedCode).value;
+    }
+  } catch (e) {
+    highlightedCode = trimmedCode.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  
+  const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+  
+  return `<div class="code-block-wrapper relative mb-4">
+    <button class="copy-btn absolute top-2 left-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors" data-code-id="${codeId}">Copy</button>
+    <pre class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto font-mono text-sm line-numbers pt-10"><code id="${codeId}" class="language-${language} hljs">${highlightedCode}</code></pre>
+    
+  </div>`;
+})
+
+
+
+  /* ================= HEADINGS ================= */
+  .replace(
+    /^### (.*?)$/gm,
+    "<h3 class='text-xl font-bold my-4 text-gray-900 dark:text-gray-100'>$1</h3>"
+  )
+  .replace(
+    /^## (.*?)$/gm,
+    "<h2 class='text-2xl font-bold my-5 text-gray-900 dark:text-gray-100'>$1</h2>"
+  )
+  .replace(
+    /^# (.*?)$/gm,
+    "<h1 class='text-3xl font-bold my-6 text-gray-900 dark:text-gray-100'>$1</h1>"
+  )
+
+  /* ================= BLOCKQUOTES ================= */
+  .replace(
+    /^> (.*?)$/gm,
+    "<blockquote class='border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 py-2 rounded-r'>$1</blockquote>"
+  )
+
+  /* ================= HORIZONTAL RULE ================= */
+  .replace(
+    /^(-{3,}|\*{3,}|={3,})$/gm,
+    "<hr class='my-6 border-gray-300 dark:border-gray-600' />"
+  )
+
+  /* ================= CHECKBOXES ================= */
+  .replace(
+    /^- \[x\] (.*?)$/gim,
+    "<div class='flex items-start gap-2 my-2'><input type='checkbox' checked disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300 line-through'>$1</span></div>"
+  )
+  .replace(
+    /^- \[ \] (.*?)$/gm,
+    "<div class='flex items-start gap-2 my-2'><input type='checkbox' disabled class='mt-1' /><span class='text-gray-700 dark:text-gray-300'>$1</span></div>"
+  )
+
+  /* ================= IMAGES ================= */
+  .replace(
+    /!\[(.*?)\]\((.*?)\)/g,
+    "<img src='$2' alt='$1' class='rounded h-auto max-h-160' style='display:inline-block;' />"
+  )
+
+  /* ================= LINKS ================= */
+  .replace(
+    /\[(.*?)\]\((.*?)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 inline-block">$1</a>'
+  )
+  // Wrap consecutive badge/image links in a flex container for side-by-side display
+  .replace(
+    /(<a[^>]*>\s*<img[^>]*>\s*<\/a>\s*)+/g,
+    (match) => `<div class='flex flex-wrap items-center gap-2 my-4'>${match.trim()}</div>`
+  )
+
+  /* ================= BOLD / ITALIC / STRIKE ================= */
+  .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+  .replace(/~~(.*?)~~/g, "<del>$1</del>")
+  .replace(/(?<!\*)\*(?!\*)(.*?)\*(?!\*)/g, "<em>$1</em>")
+
+  /* ================= INLINE CODE ================= */
+  .replace(
+    /(?<!`)`([^`\n]+)`(?!`)/g,
+    "<code class=\"bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-red-600 dark:text-red-400\">$1</code>"
+  )
+
+  /* ================= LIST ITEMS ================= */
+  .replace(
+    /^[0-9]+\. (.*?)$/gm,
+    "<li class='ml-6 list-decimal my-1 text-gray-700 dark:text-gray-300'>$1</li>"
+  )
+  .replace(
+    /^- (.*?)$/gm,
+    "<li class='ml-6 list-disc my-1 text-gray-700 dark:text-gray-300'>$1</li>"
+  )
 
       // Handle tables
       const tableRegex =
         /\|(.+)\|\n\|:?-+:?\|(?:\s*:?-+:?\|)*\n((?:\|.+\|\n?)*)/g; // Adjusted regex for better table detection
       processedContent = processedContent.replace(
         tableRegex,
-        (match, header, separator, rows) => {
+        (match, header, rows) => {
           const headerCells = header
             .split("|")
             .map((cell: string) => cell.trim())
@@ -1468,9 +1558,10 @@ export default function NotesApp() {
             )
             .join("");
 
-          const rowCells = rows
+          const rowCells = (rows || "")
             .trim()
             .split("\n")
+            .filter((row: string) => row.trim())
             .map((row: string) => {
               const cells = row
                 .split("|")
@@ -1488,13 +1579,46 @@ export default function NotesApp() {
           return `<div class="overflow-x-auto my-4"><table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table></div>`;
         }
       );
-
       // Convert line breaks
-      processedContent = processedContent.replace(/\n/g, "<br>");
 
       return processedContent;
     };
   }, []);
+
+
+useEffect(() => {
+  // Handle copy button clicks with event delegation
+  const handleCopyClick = (e: Event) => {
+    const button = e.target as HTMLElement;
+    if (button.classList.contains('copy-btn')) {
+      const codeId = button.getAttribute('data-code-id');
+      const codeElement = document.getElementById(codeId!);
+      
+      if (codeElement) {
+        const code = codeElement.textContent || '';
+        
+        navigator.clipboard.writeText(code).then(() => {
+          const originalText = button.textContent;
+          button.textContent = 'Copied!';
+          button.classList.add('bg-green-600', 'hover:bg-green-700');
+          button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+          
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('bg-green-600', 'hover:bg-green-700');
+            button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy code:', err);
+        });
+      }
+    }
+  };
+  
+  document.addEventListener('click', handleCopyClick);
+  return () => document.removeEventListener('click', handleCopyClick);
+}, []);
+
 
   const getSectionTitle = useCallback(() => {
     switch (activeSection) {
@@ -1580,178 +1704,7 @@ export default function NotesApp() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <style>{`
-        .loader {
-          --background: linear-gradient(135deg, #23C4F8, #275EFE);
-          --shadow: rgba(39, 94, 254, 0.28);
-          --text: #6C7486;
-          --page: rgba(255, 255, 255, 0.36);
-          --page-fold: rgba(255, 255, 255, 0.52);
-          --duration: 3s;
-          width: 200px;
-          height: 140px;
-          position: relative;
-        }
-
-        .loader:before, .loader:after {
-          --r: -6deg;
-          content: "";
-          position: absolute;
-          bottom: 8px;
-          width: 120px;
-          top: 80%;
-          box-shadow: 0 16px 12px var(--shadow);
-          transform: rotate(var(--r));
-        }
-
-        .loader:before {
-          left: 4px;
-        }
-
-        .loader:after {
-          --r: 6deg;
-          right: 4px;
-        }
-
-        .loader div {
-          width: 100%;
-          height: 100%;
-          border-radius: 13px;
-          position: relative;
-          z-index: 1;
-          perspective: 600px;
-          box-shadow: 0 4px 6px var(--shadow);
-          background-image: var(--background);
-        }
-
-        .loader div ul {
-          margin: 0;
-          padding: 0;
-          list-style: none;
-          position: relative;
-        }
-
-        .loader div ul li {
-          --r: 180deg;
-          --o: 0;
-          --c: var(--page);
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          transform-origin: 100% 50%;
-          color: var(--c);
-          opacity: var(--o);
-          transform: rotateY(var(--r));
-          animation: var(--duration) ease infinite;
-        }
-
-        .loader div ul li:nth-child(2) {
-          --c: var(--page-fold);
-          animation-name: page-2;
-        }
-
-        .loader div ul li:nth-child(3) {
-          --c: var(--page-fold);
-          animation-name: page-3;
-        }
-
-        .loader div ul li:nth-child(4) {
-          --c: var(--page-fold);
-          animation-name: page-4;
-        }
-
-        .loader div ul li:nth-child(5) {
-          --c: var(--page-fold);
-          animation-name: page-5;
-        }
-
-        .loader div ul li svg {
-          width: 90px;
-          height: 120px;
-          display: block;
-        }
-
-        .loader div ul li:first-child {
-          --r: 0deg;
-          --o: 1;
-        }
-
-        .loader div ul li:last-child {
-          --o: 1;
-        }
-
-        .loader span {
-          display: block;
-          left: 0;
-          right: 0;
-          top: 100%;
-          margin-top: 20px;
-          text-align: center;
-          color: var(--text);
-        }
-
-        @keyframes page-2 {
-          0% {
-            transform: rotateY(180deg);
-            opacity: 0;
-          }
-          20% {
-            opacity: 1;
-          }
-          35%, 100% {
-            opacity: 0;
-          }
-          50%, 100% {
-            transform: rotateY(0deg);
-          }
-        }
-
-        @keyframes page-3 {
-          15% {
-            transform: rotateY(180deg);
-            opacity: 0;
-          }
-          35% {
-            opacity: 1;
-          }
-          50%, 100% {
-            opacity: 0;
-          }
-          65%, 100% {
-            transform: rotateY(0deg);
-          }
-        }
-
-        @keyframes page-4 {
-          30% {
-            transform: rotateY(180deg);
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-          65%, 100% {
-            opacity: 0;
-          }
-          80%, 100% {
-            transform: rotateY(0deg);
-          }
-        }
-
-        @keyframes page-5 {
-          45% {
-            transform: rotateY(180deg);
-            opacity: 0;
-          }
-          65% {
-            opacity: 1;
-          }
-          80%, 100% {
-            opacity: 0;
-          }
-          95%, 100% {
-            transform: rotateY(0deg);
-          }
-        }
+        @keyframes page-2{0%{transform:rotateY(180deg);opacity:0}20%{opacity:1}35%,to{opacity:0}50%,to{transform:rotateY(0deg)}}@keyframes page-3{15%{transform:rotateY(180deg);opacity:0}35%{opacity:1}50%,to{opacity:0}65%,to{transform:rotateY(0deg)}}@keyframes page-4{30%{transform:rotateY(180deg);opacity:0}50%{opacity:1}65%,to{opacity:0}80%,to{transform:rotateY(0deg)}}@keyframes page-5{45%{transform:rotateY(180deg);opacity:0}65%{opacity:1}80%,to{opacity:0}95%,to{transform:rotateY(0deg)}}.loader{--background:linear-gradient(135deg, #23C4F8, #275EFE);--shadow:rgba(39, 94, 254, 0.28);--text:#6C7486;--page:rgba(255, 255, 255, 0.36);--page-fold:rgba(255, 255, 255, 0.52);--duration:3s;width:200px;height:140px;position:relative}.loader:after,.loader:before{--r:-6deg;content:"";position:absolute;bottom:8px;width:120px;top:80%;box-shadow:0 16px 12px var(--shadow);transform:rotate(var(--r))}.loader:before{left:4px}.loader:after{--r:6deg;right:4px}.loader div{width:100%;height:100%;border-radius:13px;position:relative;z-index:1;perspective:600px;box-shadow:0 4px 6px var(--shadow);background-image:var(--background)}.loader div ul{margin:0;padding:0;list-style:none;position:relative}.loader div ul li{--r:180deg;--o:0;--c:var(--page);position:absolute;top:10px;left:10px;transform-origin:100% 50%;color:var(--c);opacity:var(--o);transform:rotateY(var(--r));animation:var(--duration) ease infinite}.loader div ul li:nth-child(2){--c:var(--page-fold);animation-name:page-2}.loader div ul li:nth-child(3){--c:var(--page-fold);animation-name:page-3}.loader div ul li:nth-child(4){--c:var(--page-fold);animation-name:page-4}.loader div ul li:nth-child(5){--c:var(--page-fold);animation-name:page-5}.loader div ul li svg{width:90px;height:120px;display:block}.loader div ul li:first-child{--r:0deg;--o:1}.loader div ul li:last-child{--o:1}.loader span{display:block;left:0;right:0;top:100%;margin-top:20px;text-align:center;color:var(--text)}
       `}</style>
         <div className="text-center">
           <div className="loader">
@@ -1789,7 +1742,7 @@ export default function NotesApp() {
                 </li>
               </ul>
             </div>
-            <span>Loading</span>
+            <span>Loading...</span>
           </div>
         </div>
       </div>
@@ -1841,169 +1794,7 @@ export default function NotesApp() {
             )}
 
             <style>{`
-              @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap");
-
-              .btn-space {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 13rem;
-                overflow: hidden;
-                height: 3rem;
-                background-size: 300% 300%;
-                backdrop-filter: blur(1rem);
-                border-radius: 5rem;
-                transition: 0.5s;
-                animation: gradient_301 5s ease infinite;
-                border: double 4px transparent;
-                background-image: linear-gradient(#161a25, #161a25),
-                  linear-gradient(
-                    137.48deg,
-                    #f5434f 10%,
-                    #631e29 45%,
-                    #000000 67%,
-                    #161a25 87%
-                  );
-                background-origin: border-box;
-                background-clip: content-box, border-box;
-                font-family: "Orbitron", sans-serif;
-                cursor: pointer;
-              }
-
-              #container-stars {
-                position: absolute;
-                z-index: -1;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-                transition: 0.5s;
-                backdrop-filter: blur(1rem);
-                border-radius: 5rem;
-              }
-
-              .btn-space strong {
-                z-index: 2;
-                font-family: "Orbitron", sans-serif;
-                font-size: 12px;
-                letter-spacing: 5px;
-                color: #ffffff;
-                text-shadow: 0 0 4px white;
-              }
-
-              #glow {
-                position: absolute;
-                display: flex;
-                width: 12rem;
-              }
-
-              .circle {
-                position: absolute;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                filter: blur(2rem);
-              }
-
-              .circle:nth-of-type(1) {
-                background: rgba(245, 67, 79, 0.636);
-                animation: orbit 8s linear infinite;
-              }
-
-              .circle:nth-of-type(2) {
-                background: rgba(99, 30, 41, 0.704);
-                animation: orbit 10s linear infinite;
-              }
-
-              .btn-space:hover #container-stars {
-                z-index: 1;
-                background-color: #161a25;
-              }
-
-              .btn-space:hover {
-                transform: scale(1.1);
-              }
-
-              .btn-space:active {
-                border: double 4px #631e29;
-                background-origin: border-box;
-                background-clip: content-box, border-box;
-                animation: none;
-              }
-
-              .btn-space:active .circle {
-                background: #631e29;
-              }
-
-              @keyframes orbit {
-                from {
-                  transform: rotate(0deg) translateX(100px) rotate(0deg);
-                }
-                to {
-                  transform: rotate(360deg) translateX(100px) rotate(-360deg);
-                }
-              }
-
-              #stars {
-                position: relative;
-                background: transparent;
-                width: 200rem;
-                height: 200rem;
-              }
-
-              #stars::after {
-                content: "";
-                position: absolute;
-                top: -10rem;
-                left: -100rem;
-                width: 100%;
-                height: 100%;
-                animation: animStarRotate 90s linear infinite;
-                background-image: radial-gradient(#ffffff 1px, transparent 1%);
-                background-size: 50px 50px;
-              }
-
-              #stars::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: -50%;
-                width: 170%;
-                height: 500%;
-                animation: animStar 60s linear infinite;
-                background-image: radial-gradient(#ffffff 1px, transparent 1%);
-                background-size: 50px 50px;
-                opacity: 0.5;
-              }
-
-              @keyframes animStar {
-                from {
-                  transform: translateY(0);
-                }
-                to {
-                  transform: translateY(-135rem);
-                }
-              }
-
-              @keyframes animStarRotate {
-                from {
-                  transform: rotate(360deg);
-                }
-                to {
-                  transform: rotate(0);
-                }
-              }
-
-              @keyframes gradient_301 {
-                0% {
-                  background-position: 0% 50%;
-                }
-                50% {
-                  background-position: 100% 50%;
-                }
-                100% {
-                  background-position: 0% 50%;
-                }
-              }
+              @import url(https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap);@keyframes orbit{0%{transform:rotate(0deg) translateX(100px) rotate(0deg)}to{transform:rotate(360deg) translateX(100px) rotate(-360deg)}}@keyframes animStar{0%{transform:translateY(0)}to{transform:translateY(-135rem)}}@keyframes animStarRotate{0%{transform:rotate(360deg)}to{transform:rotate(0)}}@keyframes gradient_301{0%,to{background-position:0 50%}50%{background-position:100% 50%}}.btn-space,.btn-space strong{font-family:"Orbitron",sans-serif}#container-stars,.btn-space{overflow:hidden;transition:.5s;backdrop-filter:blur(1rem);border-radius:5rem}.btn-space{display:flex;justify-content:center;align-items:center;width:13rem;height:3rem;background-size:300% 300%;animation:gradient_301 5s ease infinite;border:double 4px transparent;background-image:linear-gradient(#161a25,#161a25),linear-gradient(137.48deg,#f5434f 10%,#631e29 45%,#000 67%,#161a25 87%);background-origin:border-box;background-clip:content-box,border-box;cursor:pointer}#container-stars{z-index:-1;width:100%;height:100%}.btn-space strong{z-index:2;font-size:12px;letter-spacing:5px;color:#fff;text-shadow:0 0 4px #fff}#container-stars,#glow,.circle{position:absolute}#glow{display:flex;width:12rem}.circle{width:30px;height:30px;border-radius:50%;filter:blur(2rem)}.circle:nth-of-type(1){background:rgba(245,67,79,.636);animation:orbit 8s linear infinite}.circle:nth-of-type(2){background:rgba(99,30,41,.704);animation:orbit 10s linear infinite}.btn-space:hover #container-stars{z-index:1;background-color:#161a25}.btn-space:hover{transform:scale(1.1)}.btn-space:active{border:double 4px #631e29;background-origin:border-box;background-clip:content-box,border-box;animation:none}.btn-space:active .circle{background:#631e29}#stars{position:relative;background:0 0;width:200rem;height:200rem}#stars::after,#stars::before{content:"";position:absolute;background-image:radial-gradient(#fff 1px,transparent 1%);background-size:50px 50px}#stars::after{top:-10rem;left:-100rem;width:100%;height:100%;animation:animStarRotate 90s linear infinite}#stars::before{top:0;left:-50%;width:170%;height:500%;animation:animStar 60s linear infinite;opacity:.5}
             `}</style>
 
             <div className="flex justify-center">
@@ -2019,8 +1810,8 @@ export default function NotesApp() {
               </button>
             </div>
             <div className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t">
-            <Icon icon="gg:website" className="inline mr-2"/>             
-             Made by{" "}
+              <Icon icon="gg:website" className="inline mr-2" />
+              Made by{" "}
               <a
                 href="http://iamthesakibalhasan.netlify.app/"
                 target="_blank"
@@ -2417,11 +2208,11 @@ export default function NotesApp() {
               />
             </DialogContent>
           </Dialog>
-                {/* Save */}
+          {/* Save */}
           {/* Note View Dialog */}
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
             <DialogContent className="max-w-full max-h-full h-screen w-screen m-0 rounded-none border-0 p-0">
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full sm:size-auto sm:width-[41%]">
                 <div className="border-b p-4 flex-shrink-0 bg-background">
                   <div className="flex items-center justify-between">
                     <DialogTitle className="text-xl font-semibold">
@@ -2503,7 +2294,7 @@ export default function NotesApp() {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-auto mb-[30px] sm:size-auto">
                   {viewingNote && (
                     <div className="max-w-4xl mx-auto p-6">
                       <div className="flex flex-wrap gap-2 mb-6">
@@ -2532,7 +2323,7 @@ export default function NotesApp() {
                       </div>
 
                       <div
-                        className="prose prose-lg dark:prose-invert max-w-none max-h-0"
+                        className="prose prose-lg dark:prose-invert max-w-100 max-h-0"
                         dangerouslySetInnerHTML={{
                           __html: renderNoteContent(
                             viewingNote.content || "No content"
@@ -2551,7 +2342,7 @@ export default function NotesApp() {
                                 key={index}
                                 src={image || "/placeholder.svg"}
                                 alt={`Image ${index + 1}`}
-                                className="w-full h-auto rounded-lg border shadow-sm"
+                                className="w-auto h-auto rounded-lg border shadow-sm"
                               />
                             ))}
                           </div>
