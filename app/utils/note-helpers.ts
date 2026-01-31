@@ -1,4 +1,4 @@
-import { Note, FirebaseNote } from "@/app/types";
+import { Note, FirebaseNote } from "../types";
 
 // Convert Firebase note to local note format
 export const convertFirebaseNote = (firebaseNote: FirebaseNote): Note => ({

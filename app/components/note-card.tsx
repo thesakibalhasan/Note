@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Note } from "@/app/types";
+import { Note } from "../types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

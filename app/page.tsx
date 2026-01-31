@@ -28,10 +28,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Lottie from "lottie-react";
 import colouredLoader from "./note loading.json";
 
-// Import new components
-import { NoteCard } from "@/app/components/note-card";
-import { convertFirebaseNote, getCurrentTimePassword } from "@/app/utils/note-helpers";
-import { Note, FirebaseNote } from "@/app/types";
+// Type imports
+import type { Note, FirebaseNote } from "./types";
+import { NoteCard } from "./components/note-card";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
