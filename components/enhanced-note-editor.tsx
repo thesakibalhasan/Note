@@ -76,8 +76,8 @@ export function EnhancedNoteEditor({ note, onClose, onSave }: EditorProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [title, setTitle] = useState(note?.title ?? "")
   const [markdown, setMarkdown] = useState(note?.content ?? "")
-  const [currentCategory, setCurrentCategory] = useState("")
-  const [tags, setTags] = useState("")
+  const [currentCategory, setCurrentCategory] = useState(note?.category ?? "")
+  const [tags, setTags] = useState(note?.tags ?? "")
   const [activeTab, setActiveTab] = useState<"editor" | "preview">("editor")
 
   const [showAlert, setShowAlert] = useState(false)
@@ -89,8 +89,8 @@ export function EnhancedNoteEditor({ note, onClose, onSave }: EditorProps) {
   useEffect(() => {
     const loaded = categoryManager.getAllCategories()
     setCategories(Array.isArray(loaded) ? loaded : [])
-    if (loaded?.length) setCurrentCategory(loaded[0].name)
-  }, [categoryManager])
+    if (loaded?.length && !currentCategory) setCurrentCategory(loaded[0].name)
+  }, [categoryManager, currentCategory])
 
   /* ================= INSERT MARKDOWN ================= */
 

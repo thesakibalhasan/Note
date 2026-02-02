@@ -1,0 +1,120 @@
+================================================================================
+                    DIALOG.TSX - CHANGES COMPARISON
+================================================================================
+
+পরিবর্তন স্থান: DialogContent component এর ভিতরে
+
+================================================================================
+পরিবর্তন #1: Container div এ পরিবর্তন
+================================================================================
+
+❌ আগে:
+  <DialogPortal>
+    <div className="w-10px">
+      <DialogOverlay />
+
+✓ এখন:
+  <DialogPortal>
+    <div className="fixed inset-0">
+      <DialogOverlay />
+
+ব্যাখ্যা: 
+- "w-10px" থেকে "fixed inset-0" এ পরিবর্তন করা হয়েছে
+- এর ফলে dialog সম্পূর্ণ স্ক্রিন জুড়ে সাইজ নেয় (top, right, bottom, left সব 0)
+- Dialog এখন সম্পূর্ণভাবে viewport fill করে
+
+
+================================================================================
+পরিবর্তন #2: DialogPrimitive.Content className এ পরিবর্তন
+================================================================================
+
+❌ আগে:
+  className={cn(
+    'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg max-h-[90vh] overflow-auto',
+    className,
+  )}
+
+✓ এখন:
+  className={cn(
+    'fixed inset-0 z-50 grid w-screen h-screen overflow-hidden rounded-0 gap-4 border-0 bg-background shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 p-4 sm:p-6 md:p-8',
+    className,
+  )}
+
+ব্যাখ্যা - নিম্নলিখিত পরিবর্তন:
+
+  ✓ "left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]" 
+    → "inset-0" 
+    (centered positioning এর পরিবর্তে সম্পূর্ণ screen cover করা)
+
+  ✓ "w-full max-w-lg" → "w-screen h-screen"
+    (fixed width এর পরিবর্তে সম্পূর্ণ width এবং height)
+
+  ✓ "overflow-auto" → "overflow-hidden"
+    (dialog নিজে scroll করবে না)
+
+  ✓ "max-h-[90vh]" removed
+    (সম্পূর্ণ height এর জন্য প্রয়োজন নেই)
+
+  ✓ "sm:rounded-lg" → "rounded-0"
+    (full-screen এ corners দরকার নেই)
+
+  ✓ "border" → "border-0"
+    (full-screen background এর জন্য border প্রয়োজন নেই)
+
+  ✓ "p-6" → "p-4 sm:p-6 md:p-8"
+    (responsive padding - mobile তে ছোট, desktop এ বড়)
+
+
+================================================================================
+পরিবর্তন #3: Children wrapper div যোগ করা হয়েছে
+================================================================================
+
+❌ আগে:
+  {children}
+
+✓ এখন:
+  <div className="overflow-y-auto overflow-x-hidden w-full h-full pr-4">
+    {children}
+  </div>
+
+ব্যাখ্যা:
+- একটি নতুন wrapper div যোগ করা হয়েছে
+- "overflow-y-auto" - vertical scroll enable করা (উপরে-নিচে স্ক্রল করা যাবে)
+- "overflow-x-hidden" - horizontal scroll disable করা (বাম-ডান স্ক্রল হবে না)
+- "w-full h-full" - পুরো space ভরে দেয়
+- "pr-4" - scrollbar এর জন্য right padding যোগ করা
+
+
+================================================================================
+পরিবর্তন #4: Close বাটনে z-index যোগ করা হয়েছে
+================================================================================
+
+❌ আগে:
+  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+
+✓ এখন:
+  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10">
+
+ব্যাখ্যা:
+- "z-10" যোগ করা হয়েছে
+- এর ফলে close button সবসময় content এর উপরে থাকে
+- scrolled content এর পিছনে যায় না
+
+
+================================================================================
+সারসংক্ষেপ (Summary)
+================================================================================
+
+মূল লক্ষ্য: Dialog কে full-screen করা এবং horizontal scroll বন্ধ করা
+
+প্রধান পরিবর্তনগুলি:
+1. Container positioning - centered থেকে full-screen
+2. Size - max-width থেকে w-screen h-screen
+3. Overflow - auto থেকে hidden (dialog এ horizontal scroll বন্ধ)
+4. Children wrapper - vertical scroll এর জন্য
+5. Responsive padding - mobile এবং desktop responsive
+6. Close button z-index - সর্বদা visible থাকে
+
+ফলাফল: Dialog এখন পুরো স্ক্রিন জুড়ে থাকে এবং horizontal scroll হয় না।
+
+================================================================================

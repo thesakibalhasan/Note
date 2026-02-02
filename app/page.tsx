@@ -374,13 +374,11 @@ const MemoizedNoteCard = React.memo(
         <Tooltip>
           <TooltipTrigger asChild>
             <Card
-              className={`group cursor-pointer hover:shadow-lg transition-all duration-200 relative ${
-                note.isPinned ? "border-primary" : ""
-              } ${note.isTrashed ? "opacity-75" : ""} ${
-                note.isPasswordProtected
+              className={`group cursor-pointer hover:shadow-lg transition-all duration-200 relative ${note.isPinned ? "border-primary" : ""
+                } ${note.isTrashed ? "opacity-75" : ""} ${note.isPasswordProtected
                   ? "border-amber-200 dark:border-amber-800"
                   : ""
-              }`}
+                }`}
               onClick={() => onView(note)}
             >
               {note.isPinned && (
@@ -539,11 +537,10 @@ const MemoizedNoteCard = React.memo(
                               }}
                             >
                               <Star
-                                className={`h-3 w-3 ${
-                                  note.isPinned
+                                className={`h-3 w-3 ${note.isPinned
                                     ? "fill-primary text-primary"
                                     : ""
-                                }`}
+                                  }`}
                               />
                             </Button>
                           </TooltipTrigger>
@@ -660,9 +657,8 @@ const MemoizedNoteCard = React.memo(
 
               <CardContent>
                 <p
-                  className={`text-sm text-muted-foreground line-clamp-3 ${
-                    note.isPasswordProtected ? "blur-sm select-none" : ""
-                  }`}
+                  className={`text-sm text-muted-foreground line-clamp-3 ${note.isPasswordProtected ? "blur-sm select-none" : ""
+                    }`}
                 >
                   {displayContent.slice(0, 150)}
                   {displayContent.length > 150 && "..."}
@@ -734,9 +730,8 @@ const MemoizedNoteCard = React.memo(
                     className="flex items-center gap-2"
                   >
                     <Star
-                      className={`h-4 w-4 ${
-                        note.isPinned ? "fill-primary text-primary" : ""
-                      }`}
+                      className={`h-4 w-4 ${note.isPinned ? "fill-primary text-primary" : ""
+                        }`}
                     />
                     {note.isPinned ? "Unpin" : "Pin"}
                   </Button>
@@ -1065,13 +1060,12 @@ export default function NotesApp() {
 
       switch (format) {
         case "txt":
-          const txtContent = `Title: ${note.title}\nCategory: ${
-            note.category
-          }\nTags: ${note.tags.join(", ")}\nCreated: ${new Date(
-            note.createdAt
-          ).toLocaleString()}\nUpdated: ${new Date(
-            note.updatedAt
-          ).toLocaleString()}\n\nContent:\n${note.content}`;
+          const txtContent = `Title: ${note.title}\nCategory: ${note.category
+            }\nTags: ${note.tags.join(", ")}\nCreated: ${new Date(
+              note.createdAt
+            ).toLocaleString()}\nUpdated: ${new Date(
+              note.updatedAt
+            ).toLocaleString()}\n\nContent:\n${note.content}`;
           const txtBlob = new Blob([txtContent], { type: "text/plain" });
           const txtUrl = URL.createObjectURL(txtBlob);
           const txtLink = document.createElement("a");
@@ -1082,13 +1076,12 @@ export default function NotesApp() {
           break;
 
         case "csv":
-          const csvContent = `Title,Category,Tags,Created,Updated,Content\n"${
-            note.title
-          }","${note.category}","${note.tags.join("; ")}","${new Date(
-            note.createdAt
-          ).toLocaleString()}","${new Date(
-            note.updatedAt
-          ).toLocaleString()}","${note.content.replace(/"/g, '""')}"`;
+          const csvContent = `Title,Category,Tags,Created,Updated,Content\n"${note.title
+            }","${note.category}","${note.tags.join("; ")}","${new Date(
+              note.createdAt
+            ).toLocaleString()}","${new Date(
+              note.updatedAt
+            ).toLocaleString()}","${note.content.replace(/"/g, '""')}"`;
           const csvBlob = new Blob([csvContent], { type: "text/csv" });
           const csvUrl = URL.createObjectURL(csvBlob);
           const csvLink = document.createElement("a");
@@ -1194,6 +1187,7 @@ export default function NotesApp() {
         // Update the note with full content
         const updatedNote = { ...note, content: fullContent };
         setViewingNote(updatedNote);
+                setIsViewDialogOpen(true);
       } catch (error) {
         setPasswordError2("Failed to load note content");
         return;
@@ -1460,7 +1454,7 @@ export default function NotesApp() {
   const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
   
   return `<div class="code-block-wrapper relative mb-4">
-    <button class="copy-btn absolute top-2 left-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors" data-code-id="${codeId}">Copy</button>
+    <button class="copy-btn absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors" data-code-id="${codeId}">Copy</button>
     <pre class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto font-mono text-sm line-numbers pt-10"><code id="${codeId}" class="language-${language} hljs">${highlightedCode}</code></pre>
     
   </div>`;
@@ -2212,7 +2206,7 @@ useEffect(() => {
           {/* Note View Dialog */}
           <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
             <DialogContent className="max-w-full max-h-full h-screen w-screen m-0 rounded-none border-0 p-0">
-              <div className="flex flex-col h-full sm:size-auto sm:width-[41%]">
+              <div className="flex flex-col sm:size-auto h-[100%] size-auto min-h-[100%] relative">
                 <div className="border-b p-4 flex-shrink-0 bg-background">
                   <div className="flex items-center justify-between">
                     <DialogTitle className="text-xl font-semibold">
@@ -2294,7 +2288,7 @@ useEffect(() => {
                   </div>
                 </div>
 
-                <div className="flex-1 overflow-auto mb-[30px] sm:size-auto">
+                <div className="flex-1 overflow-auto mb-[30px] sm:w-[100%] w-[100%]">
                   {viewingNote && (
                     <div className="max-w-4xl mx-auto p-6">
                       <div className="flex flex-wrap gap-2 mb-6">
