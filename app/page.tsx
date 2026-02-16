@@ -1764,6 +1764,20 @@ useEffect(() => {
               <Users className="h-3 w-3" />
               <span>All notes are shared with everyone</span>
             </div>
+            <p>vertion lasted
+
+
+
+
+
+
+
+
+
+
+
+              
+            </p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
