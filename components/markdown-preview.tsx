@@ -44,7 +44,7 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
           ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-1" {...props} />,
           ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-1" {...props} />,
           li: ({ node, ...props }) => <li className="mb-2" {...props} />,
-          code: ({ node, inline, ...props }) =>
+          code: ({ inline, node, ...props }: any) =>
             inline ? (
               <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-sm font-mono" {...props} />
             ) : (
