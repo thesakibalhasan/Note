@@ -264,7 +264,7 @@ export function EnhancedNoteEditor({ note, onSave, onClose }: EnhancedNoteEditor
   const [findText, setFindText] = useState("")
   const [replaceText, setReplaceText] = useState("")
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout>()
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Update categories when component mounts
   useEffect(() => {
@@ -930,7 +930,7 @@ export function EnhancedNoteEditor({ note, onSave, onClose }: EnhancedNoteEditor
 
             <TabsContent value="edit" className="flex-1 overflow-hidden m-0">
               <div className="h-full flex flex-col">
-                <ScrollArea className="border-b flex-shrink-0" orientation="horizontal">
+                <ScrollArea className="border-b flex-shrink-0 overflow-x-auto">
                   <div className="p-1 bg-card">
                     <div className="flex gap-0.5 min-w-max">
                       {/* File Operations */}
