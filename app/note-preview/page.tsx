@@ -53,6 +53,9 @@ interface Note {
 export default function NotePreviewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  if (!searchParams) {
+    return <div>Loading...</div>;
+  }
   const noteId = searchParams.get("id");
 
   const [note, setNote] = useState<Note | null>(null);
