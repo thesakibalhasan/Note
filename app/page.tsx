@@ -173,8 +173,8 @@ interface FirebaseNote {
   content: string;
   category: string;
   tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | any;
+  updatedAt: Date | any;
   isPinned: boolean;
   isArchived: boolean;
   isTrashed: boolean;
@@ -272,27 +272,33 @@ const getIconComponent = (iconName: string, className = "h-3.5 w-3.5") => {
 };
 
 // Convert Firebase note to local note format
-const convertFirebaseNote = (firebaseNote: FirebaseNote): Note => ({
-  id: firebaseNote.id || "",
-  title: firebaseNote.title,
-  content: firebaseNote.content,
-  category: firebaseNote.category,
-  tags: firebaseNote.tags,
-  createdAt:
-    firebaseNote.createdAt instanceof Date
-      ? firebaseNote.createdAt.toISOString()
-      : new Date().toISOString(),
-  updatedAt:
-    firebaseNote.updatedAt instanceof Date
-      ? firebaseNote.updatedAt.toISOString()
-      : new Date().toISOString(),
-  isPinned: firebaseNote.isPinned,
-  isArchived: firebaseNote.isArchived,
-  isTrashed: firebaseNote.isTrashed,
-  images: firebaseNote.images,
-  password: firebaseNote.password || "",
-  isPasswordProtected: firebaseNote.isPasswordProtected || false,
-});
+const convertFirebaseNote = (firebaseNote: FirebaseNote): Note => {
+  const convertTimestamp = (date: Date | any): string => {
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    if (date && typeof date.toDate === 'function') {
+      return date.toDate().toISOString();
+    }
+    return new Date().toISOString();
+  };
+
+  return {
+    id: firebaseNote.id || "",
+    title: firebaseNote.title,
+    content: firebaseNote.content,
+    category: firebaseNote.category,
+    tags: firebaseNote.tags,
+    createdAt: convertTimestamp(firebaseNote.createdAt),
+    updatedAt: convertTimestamp(firebaseNote.updatedAt),
+    isPinned: firebaseNote.isPinned,
+    isArchived: firebaseNote.isArchived,
+    isTrashed: firebaseNote.isTrashed,
+    images: firebaseNote.images,
+    password: firebaseNote.password || "",
+    isPasswordProtected: firebaseNote.isPasswordProtected || false,
+  };
+};
 
 // Memoized Note Card Component for better performance
 const MemoizedNoteCard = React.memo(
@@ -317,7 +323,7 @@ const MemoizedNoteCard = React.memo(
     onTrash: (id: string) => void;
     onRestore: (id: string) => void;
     onDelete: (id: string) => void;
-    onDownload: (note: Note, format: string) => void;
+    onDownload: (note: Note, format: "txt" | "pdf" | "csv") => void;
     onSetPassword: (note: Note) => void;
     onRemovePassword: (note: Note) => void;
   }) => {
@@ -839,8 +845,7 @@ export default function NotesApp() {
 
   // Subscribe to Firebase notes
   useEffect(() => {
-    const unsubscribe = subscribeToNotes((firebaseNotes: FirebaseNote[]) => {
-      // Explicitly type firebaseNotes
+    const unsubscribe = subscribeToNotes((firebaseNotes) => {
       const convertedNotes = firebaseNotes.map(convertFirebaseNote);
       setNotes(convertedNotes);
       setLoading(false);
@@ -900,6 +905,7 @@ export default function NotesApp() {
           isArchived: editingNote?.isArchived || false,
           isTrashed: editingNote?.isTrashed || false,
           images: noteData.images,
+          isPasswordProtected: editingNote?.isPasswordProtected || false,
         };
 
         if (editingNote) {
@@ -2162,7 +2168,6 @@ useEffect(() => {
             <DialogContent className="max-w-full max-h-[100dvh] h-[100dvh] w-full m-0 p-0 rounded-none border-0 md:rounded-lg md:border">
               <EnhancedNoteEditor
                 note={{
-                  id: editingNote?.id || "",
                   title: editingNote?.title || "",
                   content: editingNote?.content || "",
                   category: editingNote?.category || "Personal",

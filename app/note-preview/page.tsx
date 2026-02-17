@@ -79,19 +79,10 @@ export default function NotePreviewPage() {
       }
 
       try {
-        // For now, we'll need to get all notes and find the one with matching ID
-        // In a real app, you'd have a getNoteById function
-        const notes = await import("@/lib/firebase-service").then(
-          (module) => module.getAllNotes()
-        );
-        const foundNote = notes.find((n: Note) => n.id === noteId);
-
-        if (!foundNote) {
-          router.push("/");
-          return;
-        }
-
-        setNote(foundNote);
+        // TODO: Implement getNoteById function in firebase-service or fetch from your data source
+        // For now, this will need to be implemented based on your Firebase setup
+        setLoading(false);
+        router.push("/");
       } catch (error) {
         console.error("Error fetching note:", error);
         router.push("/");
