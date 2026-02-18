@@ -1728,20 +1728,7 @@ useEffect(() => {
               <Users className="h-3 w-3" />
               <span>All notes are shared with everyone</span>
             </div>
-            <p>vertion lasted
 
-
-
-
-
-
-
-
-
-
-
-              
-            </p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -1795,7 +1782,11 @@ useEffect(() => {
             </div>
           </form>
         </div>
+                    <div className="fixed bottom-4 right-4 text-xs text-muted-foreground">
+                      v{process.env.NEXT_PUBLIC_APP_VERSION}
+                    </div>
       </div>
+      
     );
   }
 
